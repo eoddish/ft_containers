@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/09 01:26:45 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/10 02:08:51 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,21 @@ namespace ft {
 			}
 			return;
 		}
-		
+	
+		vector( iterator first , iterator last ) :  _p(0) {
+			int cnt = 0;
+			for ( iterator it = first; it != last; ++it) {
+				 cnt++;	
+			}
+			this->_capacity = cnt;
+			this->_size = cnt;
+			std::allocator< T > alloc; 	
+			this->_p = alloc.allocate( this->capacity() );
+			std::copy( first, last, this->_p );
+			return;
+		}
+	
+
 		vector( vector const & other ) {
 		
 		        *this = other;
@@ -71,8 +85,13 @@ namespace ft {
 		
 		vector & operator=( vector const & other ) {
 		
-		        if( this != &other ) {
-		
+			if( this != &other ) {
+				std::allocator< T > alloc; 	
+				alloc.deallocate( this->_p, this->capacity() );
+				this->_capacity = other.capacity();
+				this->_size = other.size();
+				this->_p = alloc.allocate( other.capacity() );
+				std::copy( other.begin(), other.end(), this->_p );
 		        }
 		
 		        return *this;
@@ -97,12 +116,12 @@ namespace ft {
 		}
 
 
-		size_t size( void ) {
+		size_t size( void ) const {
 
 			return this->_size;	
 		}
 
-		size_t capacity( void ) {
+		size_t capacity( void ) const {
 	
 			return this->_capacity;	
 		}
@@ -126,12 +145,12 @@ namespace ft {
 	
 
 
-		iterator begin( void ) {
+		iterator begin( void ) const {
 			
 			return iterator( this->_p ) ;
 		}
 
-		iterator end( void ) {
+		iterator end( void ) const {
 			
 			return iterator(  this->_p + this->size() ) ;
 		}

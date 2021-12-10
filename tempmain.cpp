@@ -1,4 +1,5 @@
 #include "vector.hpp"
+#include <typeinfo>
 
 template <typename T>
 void	ft_print(ft::vector<T> & vct) {
@@ -36,4 +37,8 @@ int main( void ) {
 	
 	ft::vector<int> vct4( vct2 );
 	ft_print( vct4 );
+
+	typedef ft::iterator_traits<ft::vector<int>::iterator> traits;
+	if (typeid(traits::iterator_category)==typeid(std::random_access_iterator_tag))
+    std::cout << "vct4.begin() is a random-access iterator";
 }

@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/10 02:08:51 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/11 00:58:01 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,26 +19,39 @@
 
 namespace ft {
 
+	template< class Iterator >
+	struct iterator_traits {
+		typedef typename Iterator::iterator_category iterator_category;
+		typedef typename Iterator::value_type value_type;
+		typedef typename Iterator::difference_type difference_type;
+	    typedef typename Iterator::pointer pointer;
+	    typedef typename Iterator::reference reference;
+
+		};
+
 	template< class T >
 	class vector {
-
-
 		
 		public:
-	
 
-		class iterator : public std::iterator<std::random_access_iterator_tag, T>
-{
-				int* p;
-				public:
-				iterator(T* x) :p(x) {}
-				iterator(const iterator& mit) : p(mit.p) {}
-				iterator& operator++() { ++p; return *this;}
-				iterator operator++(int) {iterator tmp(*this); operator++(); return tmp;}
-				bool operator==(const iterator& rhs) const {return p==rhs.p;}
-				bool operator!=(const iterator& rhs) const {return p!=rhs.p;}
-				int& operator*() {return *p;}
-};			
+		class iterator {
+			int* p;
+			public:
+			iterator(T* x) :p(x) {}
+			iterator(const iterator& mit) : p(mit.p) {}
+			iterator& operator++() { ++p; return *this;}
+			iterator operator++(int) {iterator tmp(*this); operator++(); return tmp;}
+			bool operator==(const iterator& rhs) const {return p==rhs.p;}
+			bool operator!=(const iterator& rhs) const {return p!=rhs.p;}
+			int& operator*() {return *p;}
+
+			typedef  std::random_access_iterator_tag iterator_category;
+			typedef  T value_type;
+			typedef  ptrdiff_t difference_type;
+			typedef  T* pointer;
+			typedef  T& reference;
+		};			
+
 
 
 		vector( void ) : _capacity(0), _size(0), _p(0) {
@@ -49,8 +62,8 @@ namespace ft {
 
 		vector( size_t n, const T & val ) : _capacity(n), _size(n), _p(0) {
 			
-			std::allocator< T > alloc; 	
-			this->_p = alloc.allocate( this->capacity() );
+			
+			this->_p = this->_alloc.allocate( this->capacity() );
 			for ( iterator it = this->begin() ; it != this->end(); ++it) {
 				*it = val;	
 			}
@@ -64,14 +77,13 @@ namespace ft {
 			}
 			this->_capacity = cnt;
 			this->_size = cnt;
-			std::allocator< T > alloc; 	
-			this->_p = alloc.allocate( this->capacity() );
+			this->_p = this->_alloc.allocate( this->capacity() );
 			std::copy( first, last, this->_p );
 			return;
 		}
 	
 
-		vector( vector const & other ) {
+		vector( vector const & other ) :  _capacity(0), _size(0), _p(0) {
 		
 		        *this = other;
 		
@@ -86,11 +98,11 @@ namespace ft {
 		vector & operator=( vector const & other ) {
 		
 			if( this != &other ) {
-				std::allocator< T > alloc; 	
-				alloc.deallocate( this->_p, this->capacity() );
+				if ( this->capacity() )
+					this->_alloc.deallocate( this->_p, this->capacity() );
 				this->_capacity = other.capacity();
 				this->_size = other.size();
-				this->_p = alloc.allocate( other.capacity() );
+				this->_p = this->_alloc.allocate( other.capacity() );
 				std::copy( other.begin(), other.end(), this->_p );
 		        }
 		
@@ -102,11 +114,11 @@ namespace ft {
 		
 
 			if ( this->size() == this->capacity() ) {
-			std::allocator< T > alloc; 	
 				this->_capacity++;
-				T* p = alloc.allocate( this->capacity() );
+				T* p = this->_alloc.allocate( this->capacity() );
 				std::copy( this->_p, this->_p + this->size(), p );
-				alloc.deallocate( this->_p, this->capacity() );
+					if ( this->capacity() )
+				this->_alloc.deallocate( this->_p, this->capacity() );
 				this->_p = p;
 			}
 			*( this->_p + this->size() ) = val; 
@@ -160,7 +172,8 @@ namespace ft {
 		size_t _capacity;
 		size_t _size;
 		T * _p;
-
+		std::allocator< T > _alloc; 	
+	
 	};
 
 }

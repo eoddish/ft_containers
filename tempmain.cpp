@@ -40,5 +40,19 @@ int main( void ) {
 
 	typedef ft::iterator_traits<ft::vector<int>::iterator> traits;
 	if (typeid(traits::iterator_category)==typeid(std::random_access_iterator_tag))
-    std::cout << "vct4.begin() is a random-access iterator";
+    std::cout << "vct4.begin() is a random-access iterator" << std::endl;
+	
+	ft::vector<int> vct5;
+	for (int i=0; i<10; i++) vct5.push_back(i);
+	typedef ft::vector<int>::iterator iter_type;
+	ft::reverse_iterator<iter_type> rev_end ( vct5.begin() ) ;
+	ft::reverse_iterator<iter_type> rev_begin ( vct5.end() );
+	std::cout << "vct5:";
+	for (iter_type it = rev_end.base(); it != rev_begin.base(); ++it)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+	std::cout << "reversed vct5:";
+	for (; rev_begin != rev_end; ++rev_begin)
+		std::cout << ' ' << *rev_begin;
+	std::cout << '\n';
 }

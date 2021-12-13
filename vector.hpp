@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/11 00:58:01 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/13 03:06:02 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 namespace ft {
 
+
 	template< class Iterator >
 	struct iterator_traits {
 		typedef typename Iterator::iterator_category iterator_category;
@@ -29,18 +30,59 @@ namespace ft {
 
 		};
 
+	template <class Iterator>
+	class reverse_iterator {
+
+		private:
+
+		
+		int* p;
+	
+		public:
+	
+
+		typedef Iterator iterator_type;
+		
+		reverse_iterator( ) :p( 0 ) {}
+		reverse_iterator( iterator_type it ) :p( it.p - 1 ) {}
+		template <class Iter>
+		reverse_iterator (const reverse_iterator<Iter>& rev_it) :p( rev_it.p ){}	
+		iterator_type base( void ) const { return iterator_type( this->p + 1 ); };
+		reverse_iterator& operator++() { --p; return *this;}
+		reverse_iterator operator++(int) {reverse_iterator tmp(*this); operator++(); return tmp;}
+		bool operator==(const reverse_iterator& rhs) const {return p==rhs.p;}
+		bool operator!=(const reverse_iterator& rhs) const {return p!=rhs.p;}
+		int& operator*() {return *p;}
+	
+		
+		typedef typename ft::iterator_traits<Iterator>::iterator_category iterator_category;
+		typedef typename ft::iterator_traits<Iterator>::value_type value_type;
+		typedef typename ft::iterator_traits<Iterator>::difference_type difference_type;
+		typedef typename ft::iterator_traits<Iterator>::pointer pointer;
+		typedef typename ft::iterator_traits<Iterator>::reference reference;
+
+	};
+
+
 	template< class T >
 	class vector {
 		
 		public:
 
 		class iterator {
-			int* p;
+		
+			private:
+
+
 			public:
+
+			int* p;
 			iterator(T* x) :p(x) {}
 			iterator(const iterator& mit) : p(mit.p) {}
 			iterator& operator++() { ++p; return *this;}
 			iterator operator++(int) {iterator tmp(*this); operator++(); return tmp;}
+			iterator& operator--() { --p; return *this;}
+			iterator operator--(int) {iterator tmp(*this); operator--(); return tmp;}
 			bool operator==(const iterator& rhs) const {return p==rhs.p;}
 			bool operator!=(const iterator& rhs) const {return p!=rhs.p;}
 			int& operator*() {return *p;}

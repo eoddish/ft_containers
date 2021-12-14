@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/13 03:06:02 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/15 00:36:04 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <iostream>
 # include <memory>
 # include <iterator>
+# include <type_traits>
 
 namespace ft {
 
@@ -61,6 +62,15 @@ namespace ft {
 		typedef typename ft::iterator_traits<Iterator>::pointer pointer;
 		typedef typename ft::iterator_traits<Iterator>::reference reference;
 
+	};
+
+	template <bool Cond, class T = void>
+	struct enable_if;
+	
+	template < class T >
+	struct enable_if< true, T > {
+		
+		typedef T type;
 	};
 
 

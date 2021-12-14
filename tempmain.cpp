@@ -1,4 +1,6 @@
 #include "vector.hpp"
+#include "is_integral.hpp"
+#include "equal.hpp"
 #include <typeinfo>
 
 template <typename T>
@@ -11,6 +13,10 @@ void	ft_print(ft::vector<T> & vct) {
 	std::cout << std::endl;
 	}
 
+
+	template <class T>
+	typename ft::enable_if<ft::is_integral<T>::value,bool>::type is_odd (T i) { return bool( i%2 ); }
+	
 int main( void ) {
 
 	ft::vector<int> vct1;
@@ -55,4 +61,18 @@ int main( void ) {
 	for (; rev_begin != rev_end; ++rev_begin)
 		std::cout << ' ' << *rev_begin;
 	std::cout << '\n';
+
+
+	std::cout << std::boolalpha;
+//	short int i = 1;
+	int i = 1;	
+//	long int i = 1;
+
+	std::cout << "float: " << ft::is_integral<float>::value << std::endl;
+	std::cout << "intptr_t: " << ft::is_integral<intptr_t>::value << std::endl;
+ 	std::cout << "i is odd: " << is_odd(i) << std::endl;
+
+	std::cout << ft::equal(vct2.begin(), vct2.end(), vct4.begin() ) << std::endl;
+
+	std::cout << ft::equal(vct2.begin(), vct2.end(), vct3.begin() ) << std::endl;
 }

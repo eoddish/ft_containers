@@ -3,6 +3,7 @@
 #include "lexicographical_compare.hpp"
 #include "equal.hpp"
 #include "pair.hpp"
+#include "make_pair.hpp"
 #include <typeinfo>
 #include <utility>
 
@@ -97,12 +98,22 @@ int main( void ) {
 	ft::pair <std::string,double> product2 ("tomatoes",2.30);   // value init
 	ft::pair <std::string,double> product3 (product2);          // copy constructor
 	
-//	product1 = std::make_pair(std::string("lightbulbs"),0.99);   // using make_pair (move)
+	product1 = ft::make_pair(std::string("lightbulbs"),0.99);   // using make_pair (move)
 	
-	product1.first = "shoes";                  // the type of first is string
-	product1.second = 39.90;                   // the type of second is double
+	product2.first = "shoes";                  // the type of first is string
+	product2.second = 39.90;                   // the type of second is double
 	
 	std::cout << "The price of " << product1.first << " is $" << product1.second << '\n';
 	std::cout << "The price of " << product2.first << " is $" << product2.second << '\n';
 	std::cout << "The price of " << product3.first << " is $" << product3.second << '\n';
+
+	ft::pair <int,int> foo1;
+	ft::pair <int,int> bar1;
+	
+	foo1 = ft::make_pair (10,20);
+	bar1 = ft::make_pair (26, 39.1); // ok: implicit conversion from pair<double,char>
+	
+	std::cout << "foo1: " << foo1.first << ", " << foo1.second << '\n';
+	std::cout << "bar1: " << bar1.first << ", " << bar1.second << '\n';
+
 }

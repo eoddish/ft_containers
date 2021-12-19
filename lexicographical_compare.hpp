@@ -6,9 +6,12 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 19:14:06 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/15 20:29:42 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/18 11:10:34 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef LEXICOGRAPHICAL_COMPARE_HPP
+# define LEXICOGRAPHICAL_COMPARE_HPP
 
 namespace ft {
 
@@ -34,3 +37,5 @@ namespace ft {
 	  return (first2!=last2);
 	}
 }
+
+#endif

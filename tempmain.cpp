@@ -4,8 +4,12 @@
 #include "equal.hpp"
 #include "pair.hpp"
 #include "make_pair.hpp"
+#include "iterator_traits.hpp"
+#include "reverse_iterator.hpp"
+#include "enable_if.hpp"
 #include <typeinfo>
 #include <utility>
+
 
 template <typename T>
 void	ft_print(ft::vector<T> & vct) {
@@ -26,8 +30,12 @@ bool mycomp (char c1, char c2)
 
 int main( void ) {
 
+
 	ft::vector<int> vct1;
+
+
 	vct1.push_back( 2 );
+
 	std::cout << vct1.front() << " ";
 	std::cout << vct1.back() << std::endl;
 
@@ -41,8 +49,9 @@ int main( void ) {
 	
 	vct1.push_back( 8 );
 	ft_print( vct1 );
-	
-	ft::vector<int> vct2( 10, 8 );
+
+	size_t size = 10;
+	ft::vector<int> vct2( size, 8 );
 	ft_print( vct2 );	
 
 	ft::vector<int> vct3( vct1.begin(), vct1.end()  );
@@ -111,9 +120,68 @@ int main( void ) {
 	ft::pair <int,int> bar1;
 	
 	foo1 = ft::make_pair (10,20);
-	bar1 = ft::make_pair (26, 39.1); // ok: implicit conversion from pair<double,char>
+	bar1 = ft::make_pair (26, 39); // ok: implicit conversion from pair<double,char>
 	
 	std::cout << "foo1: " << foo1.first << ", " << foo1.second << '\n';
 	std::cout << "bar1: " << bar1.first << ", " << bar1.second << '\n';
 
+
+
+	ft::vector<int> vct6 (5);  // 5 default-constructed ints
+
+	ft::vector<int>::reverse_iterator rit = vct6.rbegin();
+
+	i=0;
+  for (rit = vct6.rbegin(); rit!= vct6.rend(); ++rit)
+    *rit = ++i;
+
+	std::cout << "vct6 contains:";
+	for (ft::vector<int>::iterator it = vct6.begin(); it != vct6.end(); ++it)
+	std::cout << ' ' << *it;
+	std::cout << '\n';
+
+	std::cout << "vct6 max_size: " << vct6.max_size() << std::endl;
+
+	ft::vector<int> vct7;
+	
+	// set some initial content:
+	for (i=1;i<10;i++) vct7.push_back(i);
+	
+	vct7.resize(5);
+	vct7.resize(8,100);
+	vct7.resize(12);
+	
+	std::cout << "myvector contains:";
+	for (size_t j=0;j<vct7.size();j++)
+	  std::cout << ' ' << vct7[j];
+	std::cout << '\n';
+
+	//----RESIZE----
+
+	ft::vector<int>::size_type sz;
+
+	ft::vector<int> vct8;
+	sz = vct8.capacity();
+	std::cout << "making vct8 grow:\n";
+	for (int j=0; j<100; ++j) {
+		vct8.push_back(j);
+		if (sz!=vct8.capacity()) {
+	    	sz = vct8.capacity();
+	    	std::cout << "capacity changed: " << sz << '\n';
+		}
+	}
+
+	ft::vector<int> vct9;
+	sz = vct9.capacity();
+	vct9.reserve(100);   // this is the only difference with foo above
+	std::cout << "making vct9 grow:\n";
+	for (int j=0; j<100; ++j) {
+		vct9.push_back(j);
+		if (sz!=vct9.capacity()) {
+			sz = vct9.capacity();
+			std::cout << "capacity changed: " << sz << '\n';
+	  }
+  }
 }
+
+

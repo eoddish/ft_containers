@@ -6,9 +6,12 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 20:33:46 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/17 04:01:47 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/18 11:07:45 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef PAIR_HPP
+# define PAIR_HPP
 
 namespace ft {
 
@@ -67,3 +70,5 @@ namespace ft {
 
 
 }
+
+#endif

@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/15 00:36:04 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/20 00:50:46 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,102 +17,69 @@
 # include <memory>
 # include <iterator>
 # include <type_traits>
+# include <stdexcept>
+# include "iterator_traits.hpp"
+# include "reverse_iterator.hpp"
 
 namespace ft {
 
+	template <class Category, class T, class Distance = ptrdiff_t,
+		class Pointer = T*, class Reference = T&>
+  		struct iterator {
+    
+		public:
 
-	template< class Iterator >
-	struct iterator_traits {
-		typedef typename Iterator::iterator_category iterator_category;
-		typedef typename Iterator::value_type value_type;
-		typedef typename Iterator::difference_type difference_type;
-	    typedef typename Iterator::pointer pointer;
-	    typedef typename Iterator::reference reference;
+		typedef T         value_type;
+	    typedef Distance  difference_type;
+	    typedef Pointer   pointer;
+	    typedef Reference reference;
+	    typedef Category  iterator_category;
 
-		};
 
-	template <class Iterator>
-	class reverse_iterator {
 
-		private:
-
-		
 		int* p;
-	
-		public:
-	
-
-		typedef Iterator iterator_type;
-		
-		reverse_iterator( ) :p( 0 ) {}
-		reverse_iterator( iterator_type it ) :p( it.p - 1 ) {}
-		template <class Iter>
-		reverse_iterator (const reverse_iterator<Iter>& rev_it) :p( rev_it.p ){}	
-		iterator_type base( void ) const { return iterator_type( this->p + 1 ); };
-		reverse_iterator& operator++() { --p; return *this;}
-		reverse_iterator operator++(int) {reverse_iterator tmp(*this); operator++(); return tmp;}
-		bool operator==(const reverse_iterator& rhs) const {return p==rhs.p;}
-		bool operator!=(const reverse_iterator& rhs) const {return p!=rhs.p;}
+		iterator(T* x) :p(x) {}
+		iterator(const iterator& mit) : p(mit.p) {}
+		iterator& operator++() { ++p; return *this;}
+		iterator operator++(int) {iterator tmp(*this); operator++(); return tmp;}
+		iterator& operator--() { --p; return *this;}
+		iterator operator--(int) {iterator tmp(*this); operator--(); return tmp;}
+		bool operator==(const iterator& rhs) const {return p==rhs.p;}
+		bool operator!=(const iterator& rhs) const {return p!=rhs.p;}
 		int& operator*() {return *p;}
-	
-		
-		typedef typename ft::iterator_traits<Iterator>::iterator_category iterator_category;
-		typedef typename ft::iterator_traits<Iterator>::value_type value_type;
-		typedef typename ft::iterator_traits<Iterator>::difference_type difference_type;
-		typedef typename ft::iterator_traits<Iterator>::pointer pointer;
-		typedef typename ft::iterator_traits<Iterator>::reference reference;
 
 	};
 
-	template <bool Cond, class T = void>
-	struct enable_if;
-	
-	template < class T >
-	struct enable_if< true, T > {
-		
-		typedef T type;
-	};
 
 
-	template< class T >
-	class vector {
-		
+	template < class T, class Alloc = std::allocator<T> >
+		class vector {
+
 		public:
 
-		class iterator {
-		
-			private:
+		typedef T value_type;
+		typedef Alloc allocator_type;
+		typedef typename allocator_type::reference reference;
+		typedef typename allocator_type::const_reference const_reference;
+		typedef typename allocator_type::pointer pointer;
+		typedef typename allocator_type::const_pointer const_pointer;
+		typedef ft::iterator<std::random_access_iterator_tag, value_type> iterator;
+		typedef const ft::iterator<std::random_access_iterator_tag, value_type> const_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;	
+		typedef ptrdiff_t difference_type;
+		typedef size_t size_type;
+			
 
 
-			public:
-
-			int* p;
-			iterator(T* x) :p(x) {}
-			iterator(const iterator& mit) : p(mit.p) {}
-			iterator& operator++() { ++p; return *this;}
-			iterator operator++(int) {iterator tmp(*this); operator++(); return tmp;}
-			iterator& operator--() { --p; return *this;}
-			iterator operator--(int) {iterator tmp(*this); operator--(); return tmp;}
-			bool operator==(const iterator& rhs) const {return p==rhs.p;}
-			bool operator!=(const iterator& rhs) const {return p!=rhs.p;}
-			int& operator*() {return *p;}
-
-			typedef  std::random_access_iterator_tag iterator_category;
-			typedef  T value_type;
-			typedef  ptrdiff_t difference_type;
-			typedef  T* pointer;
-			typedef  T& reference;
-		};			
-
-
-
-		vector( void ) : _capacity(0), _size(0), _p(0) {
+		explicit vector( const allocator_type& alloc = allocator_type() ) : _capacity(0), _size(0), _p(0), _alloc( alloc ) {
 				
 			
 			return;
 		}
 
-		vector( size_t n, const T & val ) : _capacity(n), _size(n), _p(0) {
+		explicit vector( size_type n, const value_type& val = value_type(),
+			const allocator_type& alloc = allocator_type() ) : _capacity(n), _size(n), _p(0), _alloc( alloc ) {
 			
 			
 			this->_p = this->_alloc.allocate( this->capacity() );
@@ -121,8 +88,10 @@ namespace ft {
 			}
 			return;
 		}
-	
-		vector( iterator first , iterator last ) :  _p(0) {
+
+		template <class InputIterator>	
+			vector( InputIterator first, InputIterator last,
+                 const allocator_type& alloc = allocator_type() ) :  _p(0) , _alloc( alloc ) {
 			int cnt = 0;
 			for ( iterator it = first; it != last; ++it) {
 				 cnt++;	
@@ -135,7 +104,7 @@ namespace ft {
 		}
 	
 
-		vector( vector const & other ) :  _capacity(0), _size(0), _p(0) {
+		vector( const vector & other ) :  _capacity(0), _size(0), _p(0) {
 		
 		        *this = other;
 		
@@ -143,7 +112,9 @@ namespace ft {
 		}
 		
 		~vector( void ) {
-		
+	
+				this->_alloc.destroy( this->_p );
+
 		        return;
 		}
 		
@@ -161,12 +132,122 @@ namespace ft {
 		        return *this;
 		}
 
+		iterator begin( void ) {
+			
+			return iterator( this->_p ) ;
+		}
+
+		const_iterator begin( void ) const {
+			
+			return iterator( this->_p ) ;
+		}
+
+		iterator end( void ) {
+			
+			return iterator(  this->_p + this->size() ) ;
+		}
+
+		const_iterator end( void ) const {
+			
+			return iterator(  this->_p + this->size() ) ;
+		}
+		
+		reverse_iterator rbegin() {
+			
+			return reverse_iterator( this->_p + this->size() );
+		}
+		
+		const_reverse_iterator rbegin() const {
+
+			return reverse_iterator( this->_p + this->size() );
+		}
+		
+		reverse_iterator rend() {
+
+			return reverse_iterator( this->_p );
+		}
+
+		const_reverse_iterator rend() const {
+
+			return reverse_iterator( this->_p );
+		}
+
+		size_t size( void ) const {
+
+			return this->_size;	
+		}
+
+		size_type max_size() const {
+
+			return 1073741823;
+		}
+
+		void resize (size_type n, value_type val = value_type()) {
+
+			if ( n > this->capacity() ) {
+				
+				this->_capacity = n;
+				T* p = this->_alloc.allocate( this->capacity() );
+				std::copy( this->_p, this->_p + this->size(), p );
+					if ( this->capacity() )
+				this->_alloc.deallocate( this->_p, this->capacity() );
+				this->_p = p;
+			}
+		
+			if ( n > this->size() ) {
+				
+				for ( iterator it = this->end() ; it != iterator( this->_p + this->size() + n ); ++it) {
+				*it = val;
+            	}
+			}
+			else if (n < this->size() ) {
+
+				for ( iterator it = iterator( this->_p + n) ; it != this->end(); ++it) {
+               		 *it = val;
+           		 }
+
+			}
+			this->_size = n;
+		}
+
+		size_type capacity() const {
+	
+			return this->_capacity;	
+		}
+
+		bool empty() const {
+
+			if ( this->size() )
+				return false;
+			return true;		
+		}
+
+		void reserve (size_type n) {
+
+			if ( n > this->max_size() )
+				throw std::length_error( "vector::_M_fill_insert" );
+		
+			if ( n > this->capacity() ) {
+				
+				this->_capacity = n;
+				T* p = this->_alloc.allocate( this->capacity() );
+				std::copy( this->_p, this->_p + this->size(), p );
+					if ( this->capacity() )
+				this->_alloc.deallocate( this->_p, this->capacity() );
+				this->_p = p;
+			}
+		}
 
 		void push_back( T const & val ) {
 		
+			if ( this->capacity() == 0 ) {
 
-			if ( this->size() == this->capacity() ) {
-				this->_capacity++;
+				this->_p = this->_alloc.allocate( this->capacity() );
+				this->_capacity = 1;
+			}
+			else if ( this->size() == this->capacity() ) {
+
+				this->_capacity *= 2;
 				T* p = this->_alloc.allocate( this->capacity() );
 				std::copy( this->_p, this->_p + this->size(), p );
 					if ( this->capacity() )
@@ -180,22 +261,8 @@ namespace ft {
 		}
 
 
-		size_t size( void ) const {
 
-			return this->_size;	
-		}
 
-		size_t capacity( void ) const {
-	
-			return this->_capacity;	
-		}
-
-		bool empty( void ) const {
-
-			if ( this->size() )
-				return false;
-			return true;		
-		}
 
 		T & back( void ) {
 			
@@ -207,24 +274,23 @@ namespace ft {
 			return *( this->_p );
 		}
 	
+		reference operator[] (size_type n) {
 
+			return *( this->_p + n );
+		}
+		
+		const_reference operator[] (size_type n) const {
 
-		iterator begin( void ) const {
-			
-			return iterator( this->_p ) ;
+			return *( this->_p + n );
 		}
 
-		iterator end( void ) const {
-			
-			return iterator(  this->_p + this->size() ) ;
-		}
 
 		private:
 
 		size_t _capacity;
 		size_t _size;
 		T * _p;
-		std::allocator< T > _alloc; 	
+		Alloc _alloc; 	
 	
 	};
 

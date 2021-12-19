@@ -1,25 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   make_pair.hpp                                      :+:      :+:    :+:   */
+/*   enable_if.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/16 19:11:01 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/18 11:08:27 by eoddish          ###   ########.fr       */
+/*   Created: 2021/12/18 11:27:54 by eoddish           #+#    #+#             */
+/*   Updated: 2021/12/18 11:29:16 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MAKE_PAIR_HPP
-# define MAKE_PAIR_HPP
+#ifndef ENABLE_IF_HPP
+# define ENABLE_IF_HPP
 
 namespace ft {
 
-	template <class T1, class T2>
-		pair<T1,T2> make_pair (T1 x, T2 y) {
+template <bool Cond, class T = void>
+    struct enable_if;
 
-			return ( pair<T1,T2>(x,y) );
-		}
+    template < class T >
+    struct enable_if< true, T > {
+
+        typedef T type;
+    };
+
 }
+
+
 
 #endif

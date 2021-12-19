@@ -6,9 +6,12 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 00:26:39 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/15 00:52:50 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/18 11:09:07 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef IS_INTEGRAL_HPP
+# define IS_INTEGRAL_HPP
 
 namespace ft {
 
@@ -65,3 +68,5 @@ namespace ft {
         static bool const value = true;
     };
 }
+
+#endif

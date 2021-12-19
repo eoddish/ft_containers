@@ -6,9 +6,12 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 01:07:22 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/15 01:19:34 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/18 11:09:49 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef EQUAL_HPP
+# define EQUAL_HPP
 
 namespace ft {
 
@@ -34,3 +37,5 @@ namespace ft {
 	}
 
 }
+
+#endif

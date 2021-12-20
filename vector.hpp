@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/20 00:50:46 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/20 15:07:45 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,15 +184,7 @@ namespace ft {
 
 		void resize (size_type n, value_type val = value_type()) {
 
-			if ( n > this->capacity() ) {
-				
-				this->_capacity = n;
-				T* p = this->_alloc.allocate( this->capacity() );
-				std::copy( this->_p, this->_p + this->size(), p );
-					if ( this->capacity() )
-				this->_alloc.deallocate( this->_p, this->capacity() );
-				this->_p = p;
-			}
+			this->reserve( n );
 		
 			if ( n > this->size() ) {
 				
@@ -224,9 +216,11 @@ namespace ft {
 
 		void reserve (size_type n) {
 
-			if ( n > this->max_size() )
+			if ( n > this->max_size() ) {
+			
 				throw std::length_error( "vector::_M_fill_insert" );
-		
+			}
+
 			if ( n > this->capacity() ) {
 				
 				this->_capacity = n;
@@ -238,6 +232,16 @@ namespace ft {
 			}
 		}
 
+		reference operator[] (size_type n) {
+
+			return *( this->_p + n );
+		}
+		
+		const_reference operator[] (size_type n) const {
+
+			return *( this->_p + n );
+		}
+
 		void push_back( T const & val ) {
 		
 			if ( this->capacity() == 0 ) {
@@ -247,12 +251,7 @@ namespace ft {
 			}
 			else if ( this->size() == this->capacity() ) {
 
-				this->_capacity *= 2;
-				T* p = this->_alloc.allocate( this->capacity() );
-				std::copy( this->_p, this->_p + this->size(), p );
-					if ( this->capacity() )
-				this->_alloc.deallocate( this->_p, this->capacity() );
-				this->_p = p;
+				this->reserve( this->capacity() * 2 );
 			}
 			*( this->_p + this->size() ) = val; 
 			this->_size++;
@@ -274,15 +273,7 @@ namespace ft {
 			return *( this->_p );
 		}
 	
-		reference operator[] (size_type n) {
 
-			return *( this->_p + n );
-		}
-		
-		const_reference operator[] (size_type n) const {
-
-			return *( this->_p + n );
-		}
 
 
 		private:

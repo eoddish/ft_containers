@@ -182,6 +182,8 @@ int main( void ) {
 			std::cout << "capacity changed: " << sz << '\n';
 	  }
   }
+  
+  vct9.resize( 1073741825 );
 }
 
 

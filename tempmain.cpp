@@ -36,28 +36,32 @@ int main( void ) {
 
 	vct1.push_back( 2 );
 
-	std::cout << vct1.front() << " ";
-	std::cout << vct1.back() << std::endl;
+	std::cout << "vct1 front: " << vct1.front() << " ";
+	std::cout << "vct1 back: " << vct1.back() << std::endl;
 
 	vct1.push_back( 3 );
-	std::cout << vct1.front() << " ";
-	std::cout << vct1.back() << std::endl;
+	std::cout << "vct1 front: " << vct1.front() << " ";
+	std::cout << "vct1.back: " << vct1.back() << std::endl;
 
 	vct1.push_back( 5 );
-	std::cout << *vct1.begin() << " ";
-	std::cout << *vct1.end() << std::endl;
+	std::cout << "vct1 begin: " << *vct1.begin() << " ";
+	std::cout << "vct1 end: " << *vct1.end() << std::endl;
 	
 	vct1.push_back( 8 );
+	std::cout << "vct1: ";
 	ft_print( vct1 );
 
 	size_t size = 10;
 	ft::vector<int> vct2( size, 8 );
+	std::cout << "vct2: ";
 	ft_print( vct2 );	
 
 	ft::vector<int> vct3( vct1.begin(), vct1.end()  );
+	std::cout << "vct3: ";
 	ft_print( vct3 );	
 	
 	ft::vector<int> vct4( vct2 );
+	std::cout << "vct4: ";
 	ft_print( vct4 );
 
 	typedef ft::iterator_traits<ft::vector<int>::iterator> traits;
@@ -156,7 +160,7 @@ int main( void ) {
 	  std::cout << ' ' << vct7[j];
 	std::cout << '\n';
 
-	//----RESIZE----
+	//=====RESERVE=====
 
 	ft::vector<int>::size_type sz;
 
@@ -182,8 +186,171 @@ int main( void ) {
 			std::cout << "capacity changed: " << sz << '\n';
 	  }
   }
-  
-  vct9.resize( 1073741825 );
+ 
+	try {
+	    // vector throws a length_error if resized above max_size
+	    vct8.resize(vct8.max_size()+1);
+	  }
+	  catch (const std::length_error& le) {
+		  std::cerr << "Length error: " << le.what() << '\n';
+	  }
+
+//=====AT=====
+
+	std::cout << "vct1.at( 0 ): " << vct1.at( 0 ) << std::endl;
+	std::cout << "vct1.at( 2 ): " << vct1.at( 2 ) << std::endl;
+  	try {
+  	  vct8.at(20)=100;      // vector::at throws an out-of-range
+  	}
+  	catch (const std::out_of_range& oor) {
+  	  std::cerr << "Out of Range error: " << oor.what() << '\n';
+  }
+
+//=====ASSIGN=====
+
+	ft::vector<int> vct10;
+	ft::vector<int> vct11;
+	ft::vector<int> vct12;
+	vct10.assign ((size_t )7,100);             // 7 ints with a value of 100
+	
+	ft::vector<int>::iterator it;
+	it=vct10.begin()+1;
+	
+	vct11.assign (it,vct10.end()-1); // the 5 central values of first
+	
+	int myints[] = {1776,7,4};
+	vct12.assign (myints,myints+3);   // assigning from array.
+	
+	std::cout << "Size of vct10: " << int (vct10.size()) << '\n';
+	std::cout << "Size of vct11: " << int (vct11.size()) << '\n';
+	std::cout << "Size of vct12: " << int (vct12.size()) << '\n';
+	std::cout << "vct12: ";
+	ft_print( vct12 );
+	
+//=====POP_BACK=====
+
+	vct12.pop_back();
+	std::cout << "vct12: ";
+	ft_print( vct12 );
+
+//=====INSERT======
+
+	ft::vector<int> vct13 ((size_t)3,100);
+	ft::vector<int>::iterator it1;
+	
+	it1 = vct13.begin();
+	it1 = vct13.insert ( it1 , 200 );
+	
+	vct13.insert (it1,(size_t)2,300);
+	
+	// "it1" no longer valid, get a new one:
+	it1 = vct13.begin();
+	
+	ft::vector<int> vct14 ((size_t) 2,400);
+	vct13.insert (it1+2,vct14.begin(),vct14.end());
+	
+	int myarray [] = { 501,502,503 };
+	vct13.insert (vct13.begin(), myarray, myarray+3);
+	
+	std::cout << "vct13 contains:";
+	ft_print( vct13 );
+
+
+//=====ERASE=====
+
+	ft::vector<int> vct15;
+	
+	// set some values (from 1 to 10)
+	for (int i=1; i<=10; i++) vct15.push_back(i);
+
+	std::cout << "vct15 contains:";
+	ft_print( vct15 );
+	
+	// erase the 6th element
+	vct15.erase (vct15.begin()+5);
+
+	std::cout << "vct15 contains:";
+	ft_print( vct15 );
+	
+	// erase the first 3 elements:
+	vct15.erase (vct15.begin(),vct15.begin()+3);
+	
+	std::cout << "vct15 contains:";
+	ft_print( vct15 );
+	
+//=====SWAP=====
+
+	ft::vector<int> vct16( (size_t) 3,100 );   // three ints with a value of 100
+	
+	ft::vector<int> vct17( (size_t)5,200 );   // five ints with a value of 200
+	
+	vct16.swap(vct17);
+	
+	std::cout << "vct16 contains:";
+	ft_print( vct16 );
+	
+	std::cout << "vct17 contains:";
+	ft_print( vct17 );
+
+
+//=====CLEAR======
+
+	ft::vector<int> vct18;
+	vct18.push_back (100);
+	vct18.push_back (200);
+	vct18.push_back (300);
+	
+	std::cout << "vct18 contains:";
+	for (unsigned i=0; i<vct18.size(); i++)
+	  std::cout << ' ' << vct18[i];
+	std::cout << '\n';
+	
+	vct18.clear();
+	vct18.push_back (1101);
+	vct18.push_back (2202);
+	
+	std::cout << "vct18 contains:";
+	for (unsigned i=0; i<vct18.size(); i++)
+	  std::cout << ' ' << vct18[i];
+	std::cout << '\n';
+
+//=====GET_ALLOCATOR=====
+
+	ft::vector<int> vct19;
+	
+	int * p;
+	
+	// allocate an array with space for 5 elements using vector's allocator:
+	p = vct19.get_allocator().allocate(5);
+	
+	// construct values in-place on the array:
+	for (i=0; i<5; i++) vct19.get_allocator().construct(&p[i],i);
+	
+	std::cout << "The allocated array contains:";
+	for (i=0; i<5; i++) std::cout << ' ' << p[i];
+	std::cout << '\n';
+	
+	// destroy and deallocate:
+	for (i=0; i<5; i++) vct19.get_allocator().destroy(&p[i]);
+	vct19.get_allocator().deallocate(p,5);
+
+//=====RELATIONAL OPERATORS=====
+
+	ft::vector<int> vct20 ((size_t)3,100);   // three ints with a value of 100
+	ft::vector<int> vct21 ((size_t)2,200);   // two ints with a value of 200
+	
+	if (vct20==vct21) std::cout << "vct20 and vct21 are equal\n";
+	if (vct20!=vct21) std::cout << "vct20 and vct21 are not equal\n";
+	if (vct20< vct21) std::cout << "vct20 is less than vct21\n";
+	if (vct20> vct21) std::cout << "vct20 is greater than vct21\n";
+	if (vct20<=vct21) std::cout << "vct20 is less than or equal to vct21\n";
+	if (vct20>=vct21) std::cout << "vct20 is greater than or equal to vct21\n";
+
+//=====SWAP=====
+
+	vct17.swap( vct16 );
+	std::cout << "vct16: ";
+	ft_print( vct16 );
+	std::cout << "vct17: ";
+	ft_print( vct17 );
 }
-
-

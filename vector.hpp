@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/20 15:07:45 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/22 01:18:09 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,14 @@
 # include <stdexcept>
 # include "iterator_traits.hpp"
 # include "reverse_iterator.hpp"
+# include "equal.hpp"
+# include "lexicographical_compare.hpp"
 
 namespace ft {
 
 	template <class Category, class T, class Distance = ptrdiff_t,
 		class Pointer = T*, class Reference = T&>
-  		struct iterator {
+  		struct iterator  {
     
 		public:
 
@@ -38,15 +40,32 @@ namespace ft {
 
 
 		int* p;
+		iterator() :p(0) {}
 		iterator(T* x) :p(x) {}
 		iterator(const iterator& mit) : p(mit.p) {}
+		iterator & operator=( iterator const & other ) {
+			
+			if( this != &other ) {
+				this->p = other.p;	
+        	}
+
+        return *this;
+		}
+
 		iterator& operator++() { ++p; return *this;}
 		iterator operator++(int) {iterator tmp(*this); operator++(); return tmp;}
 		iterator& operator--() { --p; return *this;}
 		iterator operator--(int) {iterator tmp(*this); operator--(); return tmp;}
 		bool operator==(const iterator& rhs) const {return p==rhs.p;}
 		bool operator!=(const iterator& rhs) const {return p!=rhs.p;}
+		bool operator<(const iterator& rhs) const {return p < rhs.p;}
+		bool operator<=(const iterator& rhs) const {return p <= rhs.p;}
+		bool operator>(const iterator& rhs) const {return p > rhs.p;}
+		bool operator>=(const iterator& rhs) const {return p >= rhs.p;}
 		int& operator*() {return *p;}
+		iterator operator+( const int & nbr ) { return iterator( this->p + nbr ) ;}
+		iterator operator-( const int & nbr ) { return iterator( this->p - nbr ) ;}
+		difference_type operator-( const iterator & other ) { return this->p - other.p;}
 
 	};
 
@@ -241,6 +260,74 @@ namespace ft {
 
 			return *( this->_p + n );
 		}
+		
+		reference at (size_type n) {
+
+			if ( n >= this->size() )
+				throw std::out_of_range( "vector::_M_range_check" );
+			return (*this)[n];	
+		}
+
+		const_reference at (size_type n) const {
+
+			if ( n >= this->size() )
+				throw std::out_of_range( "vector::_M_range_check" );
+			return (*this)[n];	
+		}
+
+		reference front( void ) {
+			
+			return *( this->_p );
+		}
+		
+		const_reference front() const {
+
+			return *( this->_p );
+		}
+
+		reference back( void ) {
+			
+			return *( this->_p + this->size() - 1 ) ;
+		}
+
+		const_reference back() const {
+
+			return *( this->_p + this->size() - 1 ) ;
+		}
+
+		template <class InputIterator>
+			void assign (InputIterator first, InputIterator last) {
+
+				size_type n = 0;
+				for ( InputIterator it = first; it != last; ++it )
+					++n;
+				if ( n > this->capacity() ) {
+
+					if ( this->capacity() )
+						this->_alloc.deallocate( this->_p, this->capacity() );
+					this->_capacity = n;
+					this->_p = this->_alloc.allocate( this->capacity() );
+				}
+
+				this->_size = n;
+				std::copy( first, last, this->_p );
+
+		}
+
+		void assign (size_type n, const value_type& val) {
+
+				if ( n > this->capacity() ) {
+
+					if ( this->capacity() )
+						this->_alloc.deallocate( this->_p, this->capacity() );
+					this->_capacity = n;
+					this->_p = this->_alloc.allocate( this->capacity() );
+				}
+
+				this->_size = n;
+				for ( iterator it = this->begin(); it != this->end(); ++it )
+					*it = val;
+		}
 
 		void push_back( T const & val ) {
 		
@@ -256,22 +343,89 @@ namespace ft {
 			*( this->_p + this->size() ) = val; 
 			this->_size++;
 
+		}
+
+		void pop_back() {
+
+			this->_size--;
+		}
+
+		iterator insert (iterator position, const value_type& val) {
+
+			difference_type nbr = position - this->begin();
+			if ( this->size() == this->capacity() )
+				this->reserve( this->capacity() + 1 );
+			this->_size++;
+			position = this->begin() + nbr;
+			std::copy_backward( position , this->end() - 1, this->end() );
+
+			*position = val;
+
+			return position; 
+		}
+
+    	void insert (iterator position, size_type n, const value_type& val) {
+
+			difference_type nbr = position - this->begin();
+			if ( this->size() + n > this->capacity() )
+				this->reserve( this->size()  + n );
+			iterator oldend = this->end();
+			this->_size += n;
+			position = this->begin() + nbr;
+			std::copy_backward( position , oldend, this->end() );
+			std::fill( position, position + n, val );
+		}
+
+		template <class InputIterator>
+    		void insert (iterator position, InputIterator first, InputIterator last) {
+
+			difference_type nbr = position - this->begin();
+			size_t n = std::distance( first,last );
+			if ( this->size() + n > this->capacity() )
+				this->reserve( this->size() + n );
+			iterator oldend = this->end();
+			this->_size += n;
+			position = this->begin() + nbr;
+			std::copy_backward( position , oldend, this->end() );
+			std::copy( first, last, position );
+		}
+
+		iterator erase (iterator position) {
+
+			std::copy( position + 1, this->end(), position );
+			this->_size--;
+
+			return position;
+		}
+		
+		iterator erase (iterator first, iterator last) {
+
+			int n = last - first;
+			std::copy( last, this->end(), first );
+			this->_size -= n;
+
+			return first;
+		}
+
+		void swap (vector& x) {
+
+			vector tmp = x;
+			x = *this;
+			*this = tmp;
 
 		}
 
-
-
-
-
-		T & back( void ) {
-			
-			return *( this->_p + this->size() - 1 ) ;
+		void clear() {
+	
+			this->_size = 0;
 		}
 
-		T & front( void ) {
-			
-			return *( this->_p );
+
+		allocator_type get_allocator() const {
+
+			return this->_alloc;
 		}
+
 	
 
 
@@ -285,5 +439,39 @@ namespace ft {
 	
 	};
 
+	template <class T, class Alloc>
+		bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+
+			if ( lhs.size() != rhs.size() )
+				return false;
+			return ft::equal( lhs.begin(), lhs.end(), rhs.begin() );
+		}
+	
+	template <class T, class Alloc>
+		bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return !( lhs == rhs ); }
+	
+	template <class T, class Alloc>
+		bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+
+			return ft::lexicographical_compare( lhs.begin(), lhs.end(), rhs.begin(), rhs.end() );
+		}
+	
+	template <class T, class Alloc>
+		bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return !( rhs < lhs ); };
+	
+	template <class T, class Alloc>
+		bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return rhs < lhs; };
+	
+	template <class T, class Alloc>
+		bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return !( lhs < rhs ); };
+
+	template <class T, class Alloc>
+		void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {
+
+			x.swap( y );
+		}
+	
+	template < class T, class Alloc = allocator<T> > class vector; // generic template
+	template <class Alloc> class vector<bool,Alloc>;               // bool specialization
 }
 #endif

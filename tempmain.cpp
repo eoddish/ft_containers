@@ -1,4 +1,16 @@
-#include "vector.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tempmain.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
+/*   Updated: 2021/12/23 02:21:04 by eoddish          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "stack.hpp"
 #include "is_integral.hpp"
 #include "lexicographical_compare.hpp"
 #include "equal.hpp"
@@ -353,4 +365,76 @@ int main( void ) {
 	ft_print( vct16 );
 	std::cout << "vct17: ";
 	ft_print( vct17 );
+
+//++++++++++++STACK++++++++++++++
+
+//=====CONSTRUCTOR=====
+
+	ft::vector<int> vct23 ((size_t)2,200);        // vector with 2 elements
+	ft::stack<int> stc1;                    // empty stack
+	ft::stack<int,ft::vector<int> > stc2 ( vct23 );
+
+//=====EMPTY=====
+
+	std::cout << "stc1 is empty: " << stc1.empty() << '\n';
+	std::cout << "stc2 is empty: " << stc2.empty() << '\n';
+
+
+//=====SIZE======
+
+	std::cout << "size of stc1: " << stc1.size() << '\n';
+	std::cout << "size of stc2: " << stc2.size() << '\n';
+
+//=====TOP======
+
+	std::cout << "top of stc1: " << stc1.top() << '\n';
+	stc2.push( 300 );
+	std::cout << "top of stc2: " << stc2.top() << '\n';
+
+//=====PUSH=====
+
+	ft::stack<int> stc3;
+	
+	for (int j=0; j<5; ++j) stc3.push(j);
+
+//=====POP=====
+	
+	std::cout << "Popping out elements...";
+	while ( !stc3.empty() ) {
+
+	   std::cout << ' ' << stc3.top();
+	   stc3.pop();
+	}
+	std::cout << '\n';
+
+//=====RELATIONAL OPERATORS=====
+
+	if (stc2==stc1) std::cout << "stc2 and stc1 are equal\n";
+	if (stc2!=stc1) std::cout << "stc2 and stc1 are not equal\n";
+	if (stc2< stc1) std::cout << "stc2 is less than stc1\n";
+	if (stc2> stc1) std::cout << "stc2 is greater than stc1\n";
+	if (stc2<=stc1) std::cout << "stc2 is less than or equal to stc1\n";
+	if (stc2>=stc1) std::cout << "stc2 is greater than or equal to stc1\n";
+
+//++++++++++++++++++MAP+++++++++++++++++++
+
+//=====CONSTRUCTORS=====
+
+	ft::map<char,int> map1;
+	
+	map1['a']=10;
+	map1['b']=30;
+	map1['c']=50;
+	map1['d']=70;
+	
+	std::map<char,int> map2 (map1.begin(),map1.end());
+	
+	std::map<char,int> map3 (map2);
+	
+	std::map<char,int,classcomp> map4;                 // class as Compare
+	
+	bool(*fn_pt)(char,char) = fncomp;
+	std::map<char,int,bool(*)(char,char)> map5 (fn_pt); // function pointer as Compare
+	
+
 }

@@ -6,22 +6,23 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/22 01:18:09 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/23 02:09:40 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
+# include "iterator_traits.hpp"
+# include "reverse_iterator.hpp"
+# include "equal.hpp"
+# include "lexicographical_compare.hpp"
 # include <iostream>
 # include <memory>
 # include <iterator>
 # include <type_traits>
 # include <stdexcept>
-# include "iterator_traits.hpp"
-# include "reverse_iterator.hpp"
-# include "equal.hpp"
-# include "lexicographical_compare.hpp"
+
 
 namespace ft {
 
@@ -123,7 +124,7 @@ namespace ft {
 		}
 	
 
-		vector( const vector & other ) :  _capacity(0), _size(0), _p(0) {
+		vector( const vector & other ) :  _capacity(0), _size(0), _p(0) , _alloc( other.get_allocator() ) {
 		
 		        *this = other;
 		
@@ -471,7 +472,5 @@ namespace ft {
 			x.swap( y );
 		}
 	
-	template < class T, class Alloc = allocator<T> > class vector; // generic template
-	template <class Alloc> class vector<bool,Alloc>;               // bool specialization
 }
 #endif

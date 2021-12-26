@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 20:33:46 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/18 11:07:45 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/24 01:21:37 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,11 @@ namespace ft {
 		pair() : first( first_type() ), second( second_type() ) {};
 	
 		template<class U, class V> 
-			pair (const pair<U,V>& pr) {
+			pair (const pair<U,V>& pr) : first( first_type( pr.first ) ), second( second_type( pr.second ) ) {
 	
-			*this = pr;	
 		};
 	
-		pair (const first_type& a, const second_type& b) : first( a ), second ( b ) {};
+		pair (const first_type& a, const second_type& b) : first( first_type( a ) ), second ( second_type( b ) ) {};
 
 //		template< class U1, class U2 >
 //		pair& operator= (const pair<U1, U2 > & pr) {

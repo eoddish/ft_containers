@@ -6,11 +6,12 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/23 02:21:04 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/26 03:24:57 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "stack.hpp"
+#include "map.hpp"
 #include "is_integral.hpp"
 #include "lexicographical_compare.hpp"
 #include "equal.hpp"
@@ -22,6 +23,12 @@
 #include <typeinfo>
 #include <utility>
 
+bool fncomp (char lhs, char rhs) {return lhs<rhs;}
+
+	struct classcomp {
+  	bool operator() (const char& lhs, const char& rhs) const
+  {return lhs<rhs;}
+};
 
 template <typename T>
 void	ft_print(ft::vector<T> & vct) {
@@ -426,7 +433,14 @@ int main( void ) {
 	map1['b']=30;
 	map1['c']=50;
 	map1['d']=70;
-	
+
+	std::cout << map1['a'] << std::endl;
+	std::cout << map1['b'] << std::endl;
+	std::cout << map1['c'] << std::endl;
+	std::cout << map1['d'] << std::endl;
+
+	std::cout << "size of map1: " << map1.size();
+/*	
 	std::map<char,int> map2 (map1.begin(),map1.end());
 	
 	std::map<char,int> map3 (map2);
@@ -436,5 +450,5 @@ int main( void ) {
 	bool(*fn_pt)(char,char) = fncomp;
 	std::map<char,int,bool(*)(char,char)> map5 (fn_pt); // function pointer as Compare
 	
-
+*/
 }

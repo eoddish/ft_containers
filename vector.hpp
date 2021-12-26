@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/23 02:09:40 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/24 01:32:58 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ namespace ft {
 
 
 
-		int* p;
+		pointer p;
 		iterator() :p(0) {}
 		iterator(T* x) :p(x) {}
 		iterator(const iterator& mit) : p(mit.p) {}
@@ -63,7 +63,7 @@ namespace ft {
 		bool operator<=(const iterator& rhs) const {return p <= rhs.p;}
 		bool operator>(const iterator& rhs) const {return p > rhs.p;}
 		bool operator>=(const iterator& rhs) const {return p >= rhs.p;}
-		int& operator*() {return *p;}
+		reference operator*() {return *p;}
 		iterator operator+( const int & nbr ) { return iterator( this->p + nbr ) ;}
 		iterator operator-( const int & nbr ) { return iterator( this->p - nbr ) ;}
 		difference_type operator-( const iterator & other ) { return this->p - other.p;}
@@ -87,7 +87,7 @@ namespace ft {
 		typedef const ft::iterator<std::random_access_iterator_tag, value_type> const_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;	
-		typedef ptrdiff_t difference_type;
+		typedef typename iterator_traits<iterator>::difference_type difference_type;
 		typedef size_t size_type;
 			
 

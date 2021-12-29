@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/26 03:27:19 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/30 02:28:44 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,159 @@
 
 namespace ft {
 
+		template <class T>
+		struct s_node {
+
+			T * content;
+			struct s_node *left;	
+			struct s_node *right;
+			struct s_node *parent;
+			
+		} ;
+
+ template <class Category, class T, class Distance = ptrdiff_t,
+        class Pointer = T*, class Reference = T&>
+        struct m_iterator  {
+
+
+
+		private: 
+
+
+        public:
+
+        typedef T         value_type;
+        typedef Distance  difference_type;
+        typedef Pointer   pointer;
+        typedef Reference reference;
+        typedef Category  iterator_category;
+
+		typedef s_node<value_type>  t_node;
+
+        m_iterator() : p(0), node(0), root(0) {}
+        m_iterator( pointer x, t_node *nd, t_node *rt ) : p( x ), node(nd), root( rt ) {}
+        m_iterator(const m_iterator& mit) : p (mit.p), node(mit.node), root( mit.root)  {}
+        m_iterator & operator=( m_iterator const & other ) {
+
+            if( this != &other ) {
+                p = other.p;
+				node = other.node;
+				root = other.root;
+            }
+
+        return *this;
+        }
+
+		m_iterator& operator++() {
+
+			if ( !node ) {
+				
+				node = front( root ); 
+				p = node->content; 
+				return *this;
+			}
+			node = inc( node );
+			if ( node )
+				p = node->content;
+			else
+				p = NULL;	
+					
+			return *this;
+		}
+        m_iterator operator++(int) {m_iterator tmp(*this); operator++(); return tmp;}
+        m_iterator& operator--()  {
+
+			if ( !node ) {
+				
+				node = back( root ); 
+				p = node->content; 
+				return *this;
+			}
+			node = dec( node );
+			if ( node )
+				p = node->content;
+			else
+				p = NULL;	
+					
+			return *this;
+    	}
+
+        m_iterator operator--(int) {m_iterator tmp(*this); operator--(); return tmp;}
+        bool operator==(const m_iterator& rhs) const {return p==rhs.p;}
+        bool operator!=(const m_iterator& rhs) const {return p!=rhs.p;}
+        bool operator<(const m_iterator& rhs) const {return p < rhs.p;}
+        bool operator<=(const m_iterator& rhs) const {return p <= rhs.p;}
+        bool operator>(const m_iterator& rhs) const {return p > rhs.p;}
+        bool operator>=(const m_iterator& rhs) const {return p >= rhs.p;}
+        reference operator*() {return *(p);}
+//        m_iterator operator+( const int & nbr ) { return m_iterator( this->p + nbr ) ;}
+//        m_iterator operator-( const int & nbr ) { return m_iterator( this->p - nbr ) ;}
+//        difference_type operator-( const m_iterator & other ) { return this->p - other.p;}
+//
+//
+		private:
+
+
+
+		t_node *inc( t_node * &x) {
+
+			if ( x->right != NULL )
+				return front( x->right );
+			
+			t_node *y = x->parent;
+
+			while( y != NULL && x == y->right ) {
+
+				x = y;
+				y = y->parent;
+			}
+
+			return y;
+
+		}
+
+
+		t_node *dec( t_node * &x) {
+
+			if ( x->left != NULL )
+				return back( x->left );
+			
+			t_node *y = x->parent;
+
+			while( y != NULL && x == y->left ) {
+
+				x = y;
+				y = y->parent;
+			}
+
+			return y;
+
+		}
+
+		t_node *  back( t_node *tmp ) {
+
+			while ( tmp->right )
+				tmp = tmp->right;
+
+			return tmp;
+		}
+
+		t_node *  front( t_node *tmp ) {
+
+			while ( tmp->left )
+				tmp = tmp->left;
+
+			return tmp;
+		}
+
+		public:
+
+		pointer p;
+		t_node *node;
+		t_node *root;
+
+
+    };
 
 	template < class Key, class T, class Compare = std::less<Key>,
 		class Alloc = std::allocator<ft::pair<const Key,T> > >
@@ -37,13 +190,15 @@ namespace ft {
 		typedef typename allocator_type::const_reference const_reference;
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::const_pointer const_pointer;
-		typedef ft::iterator<std::random_access_iterator_tag, value_type> iterator;
-		typedef const ft::iterator<std::random_access_iterator_tag, value_type> const_iterator;
+		typedef ft::m_iterator<std::random_access_iterator_tag, value_type> iterator;
+		typedef const ft::m_iterator<std::random_access_iterator_tag, value_type> const_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type difference_type;
 		typedef size_t size_type;
 		
+
+		typedef  s_node<value_type> t_node;
 	
 		explicit map (const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) : 
@@ -56,8 +211,10 @@ namespace ft {
 			const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) :
 			_alloc( alloc ), _comp( comp ), 
-			_size ( std::distance( first, last ) ) , _bst( 0 ) {
+			_size ( 0 ) , _bst( 0 ) {
 	
+			insert( first, last );
+
 			
 		}
 	
@@ -65,6 +222,57 @@ namespace ft {
 	
 			*this = x;
 		}
+
+
+
+
+		iterator begin() {
+
+			t_node *tmp = _bst;
+			while ( tmp->left )
+				tmp = tmp->left;
+
+			return iterator( tmp->content, tmp, _bst );
+		}
+		
+		const_iterator begin() const {
+
+			t_node *tmp = _bst;
+			while ( tmp->left )
+				tmp = tmp->left;
+			return iterator( tmp->content, tmp, _bst );
+		}
+
+		iterator end() {
+
+			return iterator(  0,  0, _bst );
+		}
+
+		const_iterator end() const {
+
+			return iterator( 0, 0, _bst  );
+		}
+
+		reverse_iterator rbegin() {
+
+			return reverse_iterator( iterator( end() ) );
+		}
+
+		const_reverse_iterator rbegin() const {
+
+			return reverse_iterator( iterator( end() ) );
+		}
+
+		reverse_iterator rend() {
+
+			return reverse_iterator( begin() );
+		}
+
+		const_reverse_iterator rend() const {
+
+			return reverse_iterator( begin() );
+		}
+
 
 		size_type size() const {
 
@@ -76,22 +284,31 @@ namespace ft {
 			return ( *( ( this->insert(ft::make_pair(k,mapped_type() ) ) ).first ) ).second;	
 		}
 
+
+
+
+
+
 		ft::pair<iterator,bool> insert (const value_type& val) {
 
-
-
-			return this->ft_search( this->_bst, val );
+			return this->ft_search( this->_bst, val, NULL );
 		}
+
 
 //		iterator insert (iterator position, const value_type& val) {
 //
 //			
 //		}
 //
-//		template <class InputIterator>
-//  		void insert (InputIterator first, InputIterator last) {
-//
-//		}
+		template <class InputIterator>
+  		void insert (InputIterator first, InputIterator last) {
+
+			for ( InputIterator it = first; it != last; ++it ) {
+			
+				insert( *it );
+			}
+
+		}
 	
 
 
@@ -100,40 +317,40 @@ namespace ft {
 		allocator_type _alloc;
 		key_compare _comp;
 		size_type _size;
-		typedef struct s_node {
+		//typedef struct s_node {
 
-			pointer content;
-			struct s_node *left;	
-			struct s_node *right;
-			
-		} t_node;
+		//	pointer content;
+		//	struct s_node *left;	
+		//	struct s_node *right;
+		//	
+		//} t_node;
 
 
-		ft::pair <iterator, bool> ft_search( t_node * &tmp, const value_type& val ) {
+		ft::pair <iterator, bool> ft_search( t_node * &tmp, const value_type& val, t_node *parent ) {
 
 
 			if ( !tmp ) {
 	
-				tmp = new t_node;  
+				std::allocator< t_node > t_node_alloc;
+				tmp = t_node_alloc.allocate( 1 );
 				tmp->content = this->_alloc.allocate( 1 );
 				this->_alloc.construct( tmp->content, val );
 				tmp->left = 0;
 				tmp->right = 0;
+				tmp->parent = parent;
 				this->_size++;
 
-				return ft::make_pair<iterator, bool> ( tmp->content, true);
+				return ft::make_pair<iterator, bool> ( iterator( tmp->content, tmp, _bst ) , true);
 			}
 
-			if ( val.first == tmp->content->first )
-				return ft::make_pair<iterator, bool> ( tmp->content, false);
-	
+			if ( ( !_comp( val.first, tmp->content->first) )
+				&& ( !_comp( tmp->content->first, val.first ) ) )
+				return ft::make_pair<iterator, bool> ( iterator( tmp->content, tmp, _bst ), false);
+			else if ( _comp( val.first, tmp->content->first) )
+				return	ft_search( tmp->left, val, tmp  );
+				
+			return	ft_search( tmp->right, val, tmp );
 
-			if ( val.first < tmp->content->first )
-				return	ft_search( tmp->left, val  );
-			if ( val.first > tmp->content->first )
-				return	ft_search( tmp->right, val );
-
-			return ft::make_pair<iterator, bool> (tmp->content , false);
 			}
 			
 

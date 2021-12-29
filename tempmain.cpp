@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/26 03:24:57 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/30 02:38:06 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -429,20 +429,35 @@ int main( void ) {
 
 	ft::map<char,int> map1;
 	
-	map1['a']=10;
-	map1['b']=30;
-	map1['c']=50;
 	map1['d']=70;
+	map1['c']=50;
+	map1['b']=30;
+	map1['a']=10;
 
 	std::cout << map1['a'] << std::endl;
 	std::cout << map1['b'] << std::endl;
 	std::cout << map1['c'] << std::endl;
 	std::cout << map1['d'] << std::endl;
 
-	std::cout << "size of map1: " << map1.size();
-/*	
-	std::map<char,int> map2 (map1.begin(),map1.end());
+	std::cout << "size of map1: " << map1.size() << std::endl;
+
+	std::cout << "map1: " << std::endl;
 	
+	for( ft::map<char, int>::iterator it = map1.begin(); it != map1.end(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+
+	ft::map<char,int> map2 (map1.begin(),map1.end());
+
+	std::cout << "map2: " << std::endl;
+
+
+	for( ft::map<char, int>::reverse_iterator it = map2.rbegin(); it != map2.rend(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+		
+
+
+/*	
 	std::map<char,int> map3 (map2);
 	
 	std::map<char,int,classcomp> map4;                 // class as Compare

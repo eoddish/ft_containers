@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/30 02:28:44 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/31 02:11:12 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,11 +105,8 @@ namespace ft {
         bool operator>(const m_iterator& rhs) const {return p > rhs.p;}
         bool operator>=(const m_iterator& rhs) const {return p >= rhs.p;}
         reference operator*() {return *(p);}
-//        m_iterator operator+( const int & nbr ) { return m_iterator( this->p + nbr ) ;}
-//        m_iterator operator-( const int & nbr ) { return m_iterator( this->p - nbr ) ;}
-//        difference_type operator-( const m_iterator & other ) { return this->p - other.p;}
-//
-//
+        pointer operator->() {return p;}
+		
 		private:
 
 
@@ -151,7 +148,7 @@ namespace ft {
 
 		t_node *  back( t_node *tmp ) {
 
-			while ( tmp->right )
+			while ( tmp && tmp->right )
 				tmp = tmp->right;
 
 			return tmp;
@@ -159,7 +156,7 @@ namespace ft {
 
 		t_node *  front( t_node *tmp ) {
 
-			while ( tmp->left )
+			while ( tmp && tmp->left )
 				tmp = tmp->left;
 
 			return tmp;
@@ -211,23 +208,39 @@ namespace ft {
 			const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) :
 			_alloc( alloc ), _comp( comp ), 
-			_size ( 0 ) , _bst( 0 ) {
+			_size ( 0 ), _bst( 0 ) {
 	
 			insert( first, last );
 
 			
 		}
 	
-		map (const map& x) {
+		map (const map& x) :
+			_alloc( x.get_allocator() ), _comp( x.key_comp() ),
+			_size( 0 ), _bst( 0 ) {
 	
 			*this = x;
 		}
 
+		map& operator= (const map& x) {
 
+			iterator xit = x.begin();
+			for( iterator it = (*this).begin(); it != (*this).end(); ++it ) {
+			
+				this->_alloc.construct( &(*it), *xit );
+				++xit;
+			}
+			
+			insert( xit, x.end() );
+			
+			return *this;
+		}
 
 
 		iterator begin() {
 
+			if ( !_bst )
+				return iterator( 0, 0, 0 );
 			t_node *tmp = _bst;
 			while ( tmp->left )
 				tmp = tmp->left;
@@ -237,6 +250,8 @@ namespace ft {
 		
 		const_iterator begin() const {
 
+			if ( !_bst )
+				return iterator( 0, 0, 0 );
 			t_node *tmp = _bst;
 			while ( tmp->left )
 				tmp = tmp->left;
@@ -311,6 +326,16 @@ namespace ft {
 		}
 	
 
+		key_compare key_comp() const {
+			
+			return _comp;
+		}
+
+
+		allocator_type get_allocator() const {
+	
+			return _alloc; 
+		}
 
 		private:
 	
@@ -353,7 +378,7 @@ namespace ft {
 
 			}
 			
-
+		
 
 		public:
 

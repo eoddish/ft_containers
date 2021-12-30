@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/30 02:38:06 by eoddish          ###   ########.fr       */
+/*   Updated: 2021/12/31 02:25:09 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -425,7 +425,7 @@ int main( void ) {
 
 //++++++++++++++++++MAP+++++++++++++++++++
 
-//=====CONSTRUCTORS=====
+//===== CONSTRUCTORS =====
 
 	ft::map<char,int> map1;
 	
@@ -442,28 +442,60 @@ int main( void ) {
 	std::cout << "size of map1: " << map1.size() << std::endl;
 
 	std::cout << "map1: " << std::endl;
-	
 	for( ft::map<char, int>::iterator it = map1.begin(); it != map1.end(); ++it )
 		std::cout << (*it).first << " " << (*it).second << std::endl; 
-
 
 	ft::map<char,int> map2 (map1.begin(),map1.end());
 
 	std::cout << "map2: " << std::endl;
-
-
 	for( ft::map<char, int>::reverse_iterator it = map2.rbegin(); it != map2.rend(); ++it )
 		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+	ft::map<char,int> map3 (map2);
+
+	std::cout << "map3: " << std::endl;
+	for( ft::map<char, int>::reverse_iterator it = map3.rbegin(); it != map3.rend(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+	//===== OPERATOR= ======
+	
+	map3['e'] = 100;
+	map2 = map3;
 		
+	std::cout << "map2: " << std::endl;
+	for( ft::map<char, int>::iterator it = map2.begin(); it != map2.end(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+	//===== BEGIN =====
+
+	ft::map<char, int>::iterator itm; 
+	itm = map2.begin();
+	std::cout << "map2 begin: ";
+	std::cout << itm->first << " " << itm->second << std::endl;
 
 
-/*	
-	std::map<char,int> map3 (map2);
-	
-	std::map<char,int,classcomp> map4;                 // class as Compare
-	
-	bool(*fn_pt)(char,char) = fncomp;
-	std::map<char,int,bool(*)(char,char)> map5 (fn_pt); // function pointer as Compare
-	
-*/
+	//===== END =====
+
+	itm = map2.end();
+	itm--;
+	std::cout << "map2 previous to end: ";
+	std::cout << itm->first << " " << itm->second << std::endl;
+
+	//===== RBEGIN =====
+
+	ft::map<char, int>::reverse_iterator ritm; 
+	ritm = map2.rbegin();
+	std::cout << "map2 rbegin: ";
+	std::cout << ritm->first << " " << ritm->second << std::endl;
+
+
+	//===== REND =====
+
+	ritm = map2.rend();
+	ritm--;
+	std::cout << "map2 previous to rend: ";
+	std::cout << ritm->first << " " << ritm->second << std::endl;
+
+
+
 }

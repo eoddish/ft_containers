@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/31 02:25:09 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/09 22:11:53 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -496,6 +496,52 @@ int main( void ) {
 	std::cout << "map2 previous to rend: ";
 	std::cout << ritm->first << " " << ritm->second << std::endl;
 
+	//===== EMPTY =====
 
+	ft::map<char,int> map4;
 
+	std::cout << "map1 is empty: " << map1.empty() << std::endl;
+	std::cout << "map4 is empty: " << map4.empty() << std::endl;
+
+	//===== SIZE =====
+
+	std::cout << "map1 size: " << map1.size() << std::endl;
+	std::cout << "map2 size: " << map2.size() << std::endl;
+	std::cout << "map3 size: " << map3.size() << std::endl;
+	std::cout << "map4 size: " << map4.size() << std::endl;
+
+	//===== MAX_SIZE =====
+
+	std::cout << "map1 max_size: " << map1.max_size() << std::endl;
+	std::cout << "map2 max_size: " << map2.max_size() << std::endl;
+
+	//===== OPERATOR[] =====
+
+	map4['w'] = 1;
+	map4['z'] = 4;
+
+	//===== INSERT =====
+
+	map4.insert( map4.begin(), ft::make_pair( 'x', 2 ) );
+	map4.insert( map4.begin(), ft::make_pair( 'y', 3 ) );
+
+	std::cout << "map4: " << std::endl;
+	for( ft::map<char, int>::iterator it = map4.begin(); it != map4.end(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+	//===== ERASE =====
+
+	map4.erase( map4.begin() );
+	map4.erase( 'z' );
+
+	std::cout << "map4: " << std::endl;
+	for( ft::map<char, int>::iterator it = map4.begin(); it != map4.end(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+	std::cout << "map4 size: " << map4.size() << std::endl; 
+
+	//===== FIND ======
+
+	std::cout << "map4 find x: " << map4.find( 'x' )->second << std::endl; 
 }
+

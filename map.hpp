@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/31 02:11:12 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/09 22:09:46 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,12 +288,20 @@ namespace ft {
 			return reverse_iterator( begin() );
 		}
 
+		bool empty() const {
+
+			return !size();
+		}
 
 		size_type size() const {
 
 			return this->_size;
 		}
-	
+
+		size_type max_size() const {
+
+			return std::numeric_limits<difference_type>::max();
+		}
 		mapped_type& operator[] (const key_type& k) {
 
 			return ( *( ( this->insert(ft::make_pair(k,mapped_type() ) ) ).first ) ).second;	
@@ -306,15 +314,15 @@ namespace ft {
 
 		ft::pair<iterator,bool> insert (const value_type& val) {
 
-			return this->ft_search( this->_bst, val, NULL );
+			return ft_search( this->_bst, val, NULL );
 		}
 
 
-//		iterator insert (iterator position, const value_type& val) {
-//
-//			
-//		}
-//
+		iterator insert (iterator position, const value_type& val) {
+
+			return ft_search( position.node, val, NULL ).first;
+		}
+
 		template <class InputIterator>
   		void insert (InputIterator first, InputIterator last) {
 
@@ -322,9 +330,43 @@ namespace ft {
 			
 				insert( *it );
 			}
-
 		}
-	
+
+		void erase (iterator position) {
+
+			ft_delete ( _bst, position.node );
+			_size--;
+		}
+
+		size_type erase (const key_type& k) {
+
+			iterator it = find( k );
+			if ( it != end() ) {
+				erase( it );
+				return 1;
+			}	
+			return 0;
+		}
+     
+	 	void erase (iterator first, iterator last) {
+
+			for( ; first != last; ++first ) 
+				erase( first );	
+		}
+
+		iterator find (const key_type& k) {
+
+			t_node *tmp = _tree_search( _bst, k );
+
+			return iterator( tmp->content, tmp, _bst );
+		}
+
+		const_iterator find (const key_type& k) const {
+
+			t_node *tmp = _tree_search( _bst, k );
+
+			return iterator( tmp->content, tmp, _bst );
+		}
 
 		key_compare key_comp() const {
 			
@@ -376,9 +418,49 @@ namespace ft {
 				
 			return	ft_search( tmp->right, val, tmp );
 
+		}
+
+		void ft_delete( t_node *&tree, t_node *&z ) {
+
+			if ( z->left == NULL )
+				ft_shift( tree, z, z->right );
+			else if ( z->right == NULL )
+				ft_shift( tree, z, z->left );
+			else {
+				iterator it = find( z->content->first );
+				t_node *y = (++it).node;
+				if ( y->parent->content != z->content ) {
+					ft_shift( tree, y, y->right );
+					y->right = z->right;
+					y->right->parent = y;
+				}
+				ft_shift( tree, z, y );
+				y->left = z->left;
+				y->left->parent = y;
 			}
-			
-		
+		}
+
+		void ft_shift( t_node *&tree, t_node *&u, t_node *&v ) {
+
+			if ( u->parent == NULL )
+				tree = v;
+			else if ( u->content == u->parent->left->content )
+				u->parent->left = v;
+			else
+				u->parent->right = v;
+			if ( v != NULL )
+				v->parent = u->parent;
+		}
+
+		t_node *_tree_search( t_node *x, const key_type &key ) {
+
+			if ( x == NULL || key == x->content->first )
+				return x;
+			if ( key < x->content->first )
+				return _tree_search( x->left, key );
+			else
+				return _tree_search( x->right, key );
+		}
 
 		public:
 

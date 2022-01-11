@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/09 22:11:53 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/11 03:40:04 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -540,8 +540,76 @@ int main( void ) {
 
 	std::cout << "map4 size: " << map4.size() << std::endl; 
 
+	//===== VALUE_COMP ======
+
+	std::cout << "map4 contains:\n";
+
+	ft::pair<char,int> highest = *map4.rbegin();          
+	ft::map<char,int>::iterator mit = map4.begin();
+	do {
+		std::cout << mit->first << " => " << mit->second << '\n';
+	} while ( map4.value_comp()(*mit++, highest) );
+
 	//===== FIND ======
 
 	std::cout << "map4 find x: " << map4.find( 'x' )->second << std::endl; 
+
+	//===== SWAP ======
+
+//	map4.swap( map2 );
+
+	map2 = map4;
+
+	std::cout << "map4 swap map2: " << std::endl;
+
+	std::cout << "map2: " << std::endl;
+	for( ft::map<char, int>::iterator it = map2.begin(); it != map2.end(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+	std::cout << "map4: " << std::endl;
+	for( ft::map<char, int>::iterator it = map4.begin(); it != map4.end(); ++it )
+		std::cout << (*it).first << " " << (*it).second << std::endl; 
+
+	//===== COUNT =====
+
+	std::cout << "map3 count a: " << map3.count( 'a' ) << std::endl; 
+	std::cout << "map3 count z: " << map3.count( 'z' ) << std::endl; 
+
+
+	//===== LOWER_BOUND =====
+
+	std::cout << "map3 lower_bound b: ";
+	if ( map3.lower_bound( 'b' ) != map3.end() )
+		std::cout << map3.lower_bound( 'b' )->first;
+	std::cout << std::endl;
+
+	std::cout << "map3 lower_bound x: ";
+	if ( map3.lower_bound( 'x' ) != map3.end() )
+		std::cout << map3.lower_bound( 'x' )->first;
+	std::cout << std::endl;
+
+
+	//===== UPPER_BOUND =====
+
+	std::cout << "map3 upper_bound b: ";
+	if ( map3.upper_bound( 'b' ) != map3.end() )
+		std::cout << map3.upper_bound( 'b' )->first;
+	std::cout << std::endl;
+
+	std::cout << "map3 upper_bound x: ";
+	if ( map3.upper_bound( 'x' ) != map3.end() )
+		std::cout << map3.upper_bound( 'x' )->first;
+	std::cout << std::endl;
+
+
+	//===== EQUAL_RANGE =====
+
+	std::cout << "lower bound points to: ";
+	std::cout << map3.equal_range( 'b' ).first->first << std::endl; 
+
+	std::cout << "upper bound points to: ";
+	std::cout << map3.equal_range( 'b' ).second->first << std::endl; 
+
+	
 }
 

@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/09 22:09:46 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/11 03:33:11 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,21 @@ namespace ft {
 		typedef T mapped_type;	
 		typedef ft::pair<const key_type,mapped_type> value_type;
 		typedef Compare key_compare; 
-		//typedef value_compare;	
+
+		class value_compare {
+			friend class map;
+			protected:
+			Compare comp;
+			value_compare (Compare c) : comp(c) {}  
+			public:
+			typedef bool result_type;
+			typedef value_type first_argument_type;
+			typedef value_type second_argument_type;
+			bool operator() (const value_type& x, const value_type& y) const {
+				return comp(x.first, y.first);
+			}
+		};
+
 		typedef Alloc allocator_type;
 		typedef typename allocator_type::reference reference;
 		typedef typename allocator_type::const_reference const_reference;
@@ -199,7 +213,7 @@ namespace ft {
 	
 		explicit map (const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) : 
-			_alloc( alloc ), _comp( comp ), _size( 0 ), _bst( 0 ) {
+			_alloc( alloc ), _comp( comp ), _vcomp( value_compare( _comp ) ), _size( 0 ), _bst( 0 ) {
 	
 		}
 	
@@ -207,7 +221,7 @@ namespace ft {
 		map (InputIterator first, InputIterator last,
 			const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type()) :
-			_alloc( alloc ), _comp( comp ), 
+			_alloc( alloc ), _comp( comp ), _vcomp( value_compare( _comp ) ),
 			_size ( 0 ), _bst( 0 ) {
 	
 			insert( first, last );
@@ -216,7 +230,7 @@ namespace ft {
 		}
 	
 		map (const map& x) :
-			_alloc( x.get_allocator() ), _comp( x.key_comp() ),
+			_alloc( x.get_allocator() ), _comp( x.key_comp() ), _vcomp( x.value_comp() ),
 			_size( 0 ), _bst( 0 ) {
 	
 			*this = x;
@@ -225,14 +239,22 @@ namespace ft {
 		map& operator= (const map& x) {
 
 			iterator xit = x.begin();
-			for( iterator it = (*this).begin(); it != (*this).end(); ++it ) {
-			
+			iterator it = (*this).begin();
+			for ( ; it != (*this).end() && xit != x.end(); ++it ) {
 				this->_alloc.construct( &(*it), *xit );
 				++xit;
 			}
+
+//			iterator tit = --it;
+//			++it;
+//			for ( ; it != this->end(); ++it )
+//				_alloc.destroy( &(*it) );
+	//		(tit.node)->left = NULL;
+	//		(tit.node)->right = NULL;
 			
 			insert( xit, x.end() );
 			
+			_size = x.size();
 			return *this;
 		}
 
@@ -354,23 +376,107 @@ namespace ft {
 				erase( first );	
 		}
 
+		void swap (map& x) {
+
+			map temp = x;
+			x = *this;
+			*this = temp;
+
+		}
+
+		key_compare key_comp() const {
+			
+			return _comp;
+		}
+
+		value_compare value_comp() const {
+
+			return _vcomp;  
+		}
+
 		iterator find (const key_type& k) {
 
 			t_node *tmp = _tree_search( _bst, k );
 
-			return iterator( tmp->content, tmp, _bst );
+			if ( tmp )
+				return iterator( tmp->content, tmp, _bst );
+			else
+				return end();
 		}
 
 		const_iterator find (const key_type& k) const {
 
 			t_node *tmp = _tree_search( _bst, k );
 
-			return iterator( tmp->content, tmp, _bst );
+			if ( tmp )
+				return iterator( tmp->content, tmp, _bst );
+			else
+				return end();
 		}
 
-		key_compare key_comp() const {
-			
-			return _comp;
+		size_type count (const key_type& k) const {
+
+			const_iterator it = find( k );
+            if ( it != end() ) {
+                return 1;
+            }
+            return 0;
+		}
+
+		iterator lower_bound (const key_type& k) {
+
+			iterator it = begin();
+			for ( ; it != end(); ++it ) {
+
+				if ( !key_comp()( it->first, k ) )
+					return it;
+			}
+			return it;
+		}
+
+		const_iterator lower_bound (const key_type& k) const {
+
+			const_iterator it = begin();
+			for ( ; it != end(); ++it ) {
+
+				if ( !key_comp()( it->first, k ) )
+					return it;
+			}
+			return it;
+		}	
+
+		iterator upper_bound (const key_type& k) {
+
+			iterator it = begin();
+			for ( ; it != end(); ++it ) {
+
+				if ( key_comp()( k, it->first ) )
+					return it;
+			}
+
+			return it;
+		}
+
+		const_iterator upper_bound (const key_type& k) const {
+
+			const_iterator it = begin();
+			for ( ; it != end(); ++it ) {
+
+				if ( key_comp()( k, it->first ) )
+					return it;
+			}
+			return it;
+
+		}
+
+		pair<const_iterator,const_iterator> equal_range (const key_type& k) const {
+
+			return ft::make_pair( lower_bound( k ), upper_bound( k ) );
+		}
+
+		pair<iterator,iterator>             equal_range (const key_type& k) {
+
+			return ft::make_pair( lower_bound( k ), upper_bound( k ) );
 		}
 
 
@@ -383,23 +489,17 @@ namespace ft {
 	
 		allocator_type _alloc;
 		key_compare _comp;
+		value_compare _vcomp;
 		size_type _size;
-		//typedef struct s_node {
-
-		//	pointer content;
-		//	struct s_node *left;	
-		//	struct s_node *right;
-		//	
-		//} t_node;
-
+		typedef typename allocator_type::template rebind<t_node>::other t_node_allocator_type;
+		t_node_allocator_type _t_node_alloc;
 
 		ft::pair <iterator, bool> ft_search( t_node * &tmp, const value_type& val, t_node *parent ) {
 
 
 			if ( !tmp ) {
-	
-				std::allocator< t_node > t_node_alloc;
-				tmp = t_node_alloc.allocate( 1 );
+
+				tmp = _t_node_alloc.allocate( 1 );
 				tmp->content = this->_alloc.allocate( 1 );
 				this->_alloc.construct( tmp->content, val );
 				tmp->left = 0;
@@ -452,7 +552,7 @@ namespace ft {
 				v->parent = u->parent;
 		}
 
-		t_node *_tree_search( t_node *x, const key_type &key ) {
+		t_node *_tree_search( t_node *x, const key_type &key ) const {
 
 			if ( x == NULL || key == x->content->first )
 				return x;

@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/11 03:33:11 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/11 20:35:15 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,26 +235,18 @@ namespace ft {
 	
 			*this = x;
 		}
+	
+		~map() {
+
+			clear();
+		}
 
 		map& operator= (const map& x) {
 
-			iterator xit = x.begin();
-			iterator it = (*this).begin();
-			for ( ; it != (*this).end() && xit != x.end(); ++it ) {
-				this->_alloc.construct( &(*it), *xit );
-				++xit;
-			}
-
-//			iterator tit = --it;
-//			++it;
-//			for ( ; it != this->end(); ++it )
-//				_alloc.destroy( &(*it) );
-	//		(tit.node)->left = NULL;
-	//		(tit.node)->right = NULL;
-			
-			insert( xit, x.end() );
-			
+			clear();
+			insert( x.begin(), x.end() );
 			_size = x.size();
+
 			return *this;
 		}
 
@@ -382,6 +374,13 @@ namespace ft {
 			x = *this;
 			*this = temp;
 
+		}
+	
+		void clear() {
+
+			ft_clean( _bst );	
+			_size = 0;
+			_bst = NULL;
 		}
 
 		key_compare key_comp() const {
@@ -562,11 +561,59 @@ namespace ft {
 				return _tree_search( x->right, key );
 		}
 
+		void ft_clean( t_node *& x ) {
+
+			if ( x != NULL ) {
+
+				ft_clean( x->left );
+				ft_clean( x->right );
+				_alloc.destroy( x->content );
+				_t_node_alloc.destroy( x );
+			}
+		}
+
 		public:
 
 		t_node *_bst;
 
 	};
+
+	template <class Key, class T, class Compare, class Alloc>
+		void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y) {
+		
+		x.swap( y );
+	}
+
+	template <class Key, class T, class Compare, class Alloc>
+		bool operator== ( const map<Key,T,Compare,Alloc>& lhs,
+			const map<Key,T,Compare,Alloc>& rhs ) {
+
+		if ( lhs.size() != rhs.size() )
+				return false;
+		return ft::equal( lhs.begin(), lhs.end(), rhs.begin();		
+	}
+
+	template <class Key, class T, class Compare, class Alloc>
+		bool operator!= ( const map<Key,T,Compare,Alloc>& lhs,
+			const map<Key,T,Compare,Alloc>& rhs ) { return !( lhs == rhs ); }
+
+	template <class Key, class T, class Compare, class Alloc>
+		bool operator<  ( const map<Key,T,Compare,Alloc>& lhs,
+			const map<Key,T,Compare,Alloc>& rhs ) {
+		
+		return ft::lexicographical_compare( lhs.begin(), lhs.end(), rhs.begin() );
+	}
+
+	template <class Key, class T, class Compare, class Alloc>
+		bool operator<= ( const map<Key,T,Compare,Alloc>& lhs,
+			const map<Key,T,Compare,Alloc>& rhs ) { return !( rhs < lhs ); };
+
+	template <class Key, class T, class Compare, class Alloc>
+		bool operator>  ( const map<Key,T,Compare,Alloc>& lhs,
+			const map<Key,T,Compare,Alloc>& rhs ) { return rhs < lhs; };
+	template <class Key, class T, class Compare, class Alloc>
+		bool operator>= ( const map<Key,T,Compare,Alloc>& lhs,
+			const map<Key,T,Compare,Alloc>& rhs ) { return !( lhs < rhs ); };
 }
 
 #endif

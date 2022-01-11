@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/11 03:40:04 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/11 20:11:55 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -556,9 +556,13 @@ int main( void ) {
 
 	//===== SWAP ======
 
-//	map4.swap( map2 );
+	ft::map<char, int>::iterator itb1 = map2.begin();
+	ft::map<char, int>::iterator itb2 = map4.begin();
+	map4.swap( map2 );
 
-	map2 = map4;
+	std::cout << "itb1: " << itb1->first << std::endl;
+	std::cout << "itb2: " << itb2->first << std::endl;
+
 
 	std::cout << "map4 swap map2: " << std::endl;
 

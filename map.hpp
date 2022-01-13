@@ -6,17 +6,14 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/11 20:35:15 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/13 02:10:04 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAP_HPP
 # define MAP_HPP
 
-# include "pair.hpp"
-# include "make_pair.hpp"
-# include <iostream>
-# include <unistd.h>
+# include "utilities.hpp"
 
 namespace ft {
 
@@ -590,7 +587,7 @@ namespace ft {
 
 		if ( lhs.size() != rhs.size() )
 				return false;
-		return ft::equal( lhs.begin(), lhs.end(), rhs.begin();		
+		return ft::equal( lhs.begin(), lhs.end(), rhs.begin() );
 	}
 
 	template <class Key, class T, class Compare, class Alloc>

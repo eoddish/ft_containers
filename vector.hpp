@@ -6,23 +6,14 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2021/12/24 01:32:58 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/13 03:29:22 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include "iterator_traits.hpp"
-# include "reverse_iterator.hpp"
-# include "equal.hpp"
-# include "lexicographical_compare.hpp"
-# include <iostream>
-# include <memory>
-# include <iterator>
-# include <type_traits>
-# include <stdexcept>
-
+# include "utilities.hpp"
 
 namespace ft {
 
@@ -65,7 +56,9 @@ namespace ft {
 		bool operator>=(const iterator& rhs) const {return p >= rhs.p;}
 		reference operator*() {return *p;}
 		iterator operator+( const int & nbr ) { return iterator( this->p + nbr ) ;}
+		iterator operator+=( const int & nbr ) { return iterator( this->p + nbr ) ;}
 		iterator operator-( const int & nbr ) { return iterator( this->p - nbr ) ;}
+		iterator operator-=( const int & nbr ) { return iterator( this->p - nbr ) ;}
 		difference_type operator-( const iterator & other ) { return this->p - other.p;}
 
 	};
@@ -110,8 +103,10 @@ namespace ft {
 		}
 
 		template <class InputIterator>	
-			vector( InputIterator first, InputIterator last,
+			vector( InputIterator first, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last,
                  const allocator_type& alloc = allocator_type() ) :  _p(0) , _alloc( alloc ) {
+
+
 			int cnt = 0;
 			for ( iterator it = first; it != last; ++it) {
 				 cnt++;	
@@ -297,7 +292,7 @@ namespace ft {
 		}
 
 		template <class InputIterator>
-			void assign (InputIterator first, InputIterator last) {
+			void assign (InputIterator first, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last ) {
 
 				size_type n = 0;
 				for ( InputIterator it = first; it != last; ++it )

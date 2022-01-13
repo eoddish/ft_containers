@@ -6,22 +6,30 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/11 20:11:55 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/13 03:23:29 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "stack.hpp"
 #include "map.hpp"
-#include "is_integral.hpp"
-#include "lexicographical_compare.hpp"
-#include "equal.hpp"
-#include "pair.hpp"
-#include "make_pair.hpp"
-#include "iterator_traits.hpp"
-#include "reverse_iterator.hpp"
-#include "enable_if.hpp"
-#include <typeinfo>
-#include <utility>
+#include <vector>
+
+template <typename T>
+std::vector<int> rend_test(ft::vector<T> vector) {
+    std::vector<int> v;
+    vector.assign(1000, 1);
+    v.push_back(*(vector.rend() - 1));
+    v.push_back(*(vector.rend() - 2));
+    return v;
+}
+
+	template <typename T>
+	std::vector<int> empty_test(ft::vector<T> vector) {
+			std::vector<int> v;
+			vector.assign(1000, 1);
+			v.push_back(vector.empty());
+			return v;
+		}
 
 bool fncomp (char lhs, char rhs) {return lhs<rhs;}
 
@@ -70,8 +78,7 @@ int main( void ) {
 	std::cout << "vct1: ";
 	ft_print( vct1 );
 
-	size_t size = 10;
-	ft::vector<int> vct2( size, 8 );
+	ft::vector<int> vct2( 10, 8 );
 	std::cout << "vct2: ";
 	ft_print( vct2 );	
 
@@ -613,7 +620,13 @@ int main( void ) {
 
 	std::cout << "upper bound points to: ";
 	std::cout << map3.equal_range( 'b' ).second->first << std::endl; 
-
 	
+	empty_test( ft::vector<int>() );
+	rend_test( vct1 );
+	std::cout << "vct15 contains: ";
+	ft_print( vct15 );
+	std::cout << *(vct15.rend() - 1) << std::endl;
+	std::cout << *(vct15.rend() - 2) << std::endl;
 }
+
 

@@ -6,13 +6,81 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/13 03:23:29 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/15 02:41:23 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "stack.hpp"
 #include "map.hpp"
 #include <vector>
+#include <unistd.h>
+
+template <typename T>
+std::vector<int> assign_std_test(ft::vector<T> vector) {
+    std::vector<int> v;
+    std::vector<int> tmp;
+    vector.assign(3, 3);
+    tmp.assign(40000000, 1);
+    vector.assign(tmp.begin(), tmp.end());
+    for (size_t i = 0; i < tmp.size(); ++i)
+        v.push_back(vector[i]);
+    v.push_back(vector.size());
+    v.push_back(vector.capacity());
+    return v;
+}
+
+template <typename T>
+std::vector<int> resize_test(ft::vector<T> vector1) {
+    std::vector<int> v;
+	ft::vector<T> vector;
+    //vector.assign(99000, 1);
+    vector.resize(50000);
+    vector1[1] = 0;
+ 	//vector.reserve(50000000);
+	vector.resize(70000);
+/*
+write(1, "*\n", 2);
+    v.push_back(vector.size());
+    v.push_back(vector.capacity());
+    vector.resize(153000000, T());
+write(1, "*\n", 2);
+    v.push_back(vector.size());
+    v.push_back(vector.capacity());
+    v.push_back(vector[65]);
+*/
+    return v;
+}
+
+template <typename T>
+std::vector<int> iterator_test(ft::vector<T> vector) {
+    typename ft::vector<T>::iterator it;
+    std::vector<int> v;
+    for (int i = 0; i < 10; ++i)
+        vector.push_back(i);
+    it = vector.begin();
+    v.push_back(*(++it));
+    v.push_back(*(--it));
+    v.push_back(*(it + 1));
+    it += 1;
+    v.push_back(*(it - 1));
+    it -= 1;
+    v.push_back(*it);
+    return v;
+}
+
+template <typename T>
+std::vector<int> constructor_std_test(ft::vector<T> vecto) {
+    (void)vecto;
+    std::vector<int> v;
+    ft::vector<T> vector(3, 3);
+    std::vector<int> tmp(10000000, 4);
+    ft::vector<int> tmp2(tmp.begin(), tmp.end());
+    v.push_back(tmp2.size());
+    v.push_back(tmp2.capacity());
+    for (size_t i = 0; i < tmp.size(); ++i)
+        v.push_back(tmp2[i]);
+    return v;
+}
 
 template <typename T>
 std::vector<int> rend_test(ft::vector<T> vector) {
@@ -379,7 +447,7 @@ int main( void ) {
 	ft_print( vct16 );
 	std::cout << "vct17: ";
 	ft_print( vct17 );
-
+/*
 //++++++++++++STACK++++++++++++++
 
 //=====CONSTRUCTOR=====
@@ -620,13 +688,31 @@ int main( void ) {
 
 	std::cout << "upper bound points to: ";
 	std::cout << map3.equal_range( 'b' ).second->first << std::endl; 
-	
+*/	
 	empty_test( ft::vector<int>() );
 	rend_test( vct1 );
 	std::cout << "vct15 contains: ";
 	ft_print( vct15 );
-	std::cout << *(vct15.rend() - 1) << std::endl;
+/*	std::cout << *(vct15.rend() - 1) << std::endl;
 	std::cout << *(vct15.rend() - 2) << std::endl;
+	std::cout << *(vct15.begin() += 1 ) << std::endl;
+	std::cout << *(vct15.begin() += 2 ) << std::endl;
+	constructor_std_test(vct15);
+
+
+	 iterator_test(vct15);
+	resize_test(vct15); 
+	assign_std_test( vct15);
+*/
+
+//	vector<int>::const_iterator it = vct15.begin();
+	ft::vector<int> vct30;
+	std::cout << "vct30 contains: ";
+	ft_print( vct30 );
+	vct30.insert( vct30.end(), vct15.begin(),vct15.end() ); 
+	std::cout << "vct30 contains: ";
+	ft_print( vct30 );
+	vct30.insert( vct30.end(), vct15.rbegin(),vct15.rend() ); 
+	std::cout << "vct30 contains: ";
+	ft_print( vct30 );
 }
-
-

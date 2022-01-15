@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/12 17:27:06 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/13 03:19:35 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/15 03:27:02 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,7 +223,10 @@ namespace ft {
 				reverse_iterator operator--(int) {reverse_iterator tmp(*this); operator--(); return tmp;}
 
 				reverse_iterator operator+( const int & nbr ) { return reverse_iterator( base_it - nbr ) ;}
+				reverse_iterator &operator+=( const int & nbr ) { base_it -= nbr; return *this; }
 				reverse_iterator operator-( const int & nbr ) { return reverse_iterator( base_it + nbr ) ;}
+				reverse_iterator &operator-=( const int & nbr ) { base_it += nbr; return *this; }
+
 
 				bool operator==(const reverse_iterator& rhs) const {return base_it==rhs.base_it;}
 				bool operator!=(const reverse_iterator& rhs) const {return base_it!=rhs.base_it;}

@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/15 02:41:23 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/17 23:08:43 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,9 +374,9 @@ int main( void ) {
 	
 //=====SWAP=====
 
-	ft::vector<int> vct16( (size_t) 3,100 );   // three ints with a value of 100
+	ft::vector<int> vct16(  3,100 );   // three ints with a value of 100
 	
-	ft::vector<int> vct17( (size_t)5,200 );   // five ints with a value of 200
+	ft::vector<int> vct17( 5,200 );   // five ints with a value of 200
 	
 	vct16.swap(vct17);
 	
@@ -435,18 +435,22 @@ int main( void ) {
 	
 	if (vct20==vct21) std::cout << "vct20 and vct21 are equal\n";
 	if (vct20!=vct21) std::cout << "vct20 and vct21 are not equal\n";
-	if (vct20< vct21) std::cout << "vct20 is less than vct21\n";
+/*	if (vct20< vct21) std::cout << "vct20 is less than vct21\n";
 	if (vct20> vct21) std::cout << "vct20 is greater than vct21\n";
 	if (vct20<=vct21) std::cout << "vct20 is less than or equal to vct21\n";
 	if (vct20>=vct21) std::cout << "vct20 is greater than or equal to vct21\n";
-
+*/
 //=====SWAP=====
 
+	ft::vector<int>::iterator swapit1 = vct16.begin(); 
+	ft::vector<int>::iterator swapit2 = vct17.begin(); 
 	vct17.swap( vct16 );
 	std::cout << "vct16: ";
 	ft_print( vct16 );
 	std::cout << "vct17: ";
 	ft_print( vct17 );
+	std::cout << "vct16.begin: " << *swapit2 << std::endl;
+	std::cout << "vct17.begin: " << *swapit1 << std::endl;
 /*
 //++++++++++++STACK++++++++++++++
 
@@ -715,4 +719,18 @@ int main( void ) {
 	vct30.insert( vct30.end(), vct15.rbegin(),vct15.rend() ); 
 	std::cout << "vct30 contains: ";
 	ft_print( vct30 );
+	ft::vector<int>::reverse_iterator itt(vct30.rbegin());
+	ft::vector<int>::const_reverse_iterator itte(vct30.rend());
+	ft::vector<int>::const_iterator itti(vct30.begin());
+	std::cout << (itt != itte) << std::endl;
+	itte--;
+	std::cout << itti[0] << std::endl;
+	ft::vector<int>::const_iterator ittk;
+	ittk = itti;
+	std::cout << ittk[0] << std::endl;
+	std::cout << ittk[0] << std::endl;
+	std::vector<std::string> vct31;
+	ft::vector<std::string> vct32;
+	std::cout << vct31.max_size() << std::endl;
+	std::cout << vct32.max_size() << std::endl;
 }

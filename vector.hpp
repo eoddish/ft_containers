@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/17 23:08:04 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/18 18:02:20 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ namespace ft {
 
 
 
-		 pointer p;
 		base_iterator() :p(0) {}
 		base_iterator( T* x ) :p(x) {}
 		base_iterator( base_iterator const &mit) : p(mit.m()) {}
@@ -50,29 +49,19 @@ namespace ft {
         return *this;
 		}
 
-/*		base_iterator& operator++() { ++m; return *this;}
-		base_iterator operator++(int) {base_iterator tmp(*this); operator++(); return tmp;}
-		base_iterator& operator--() { --m; return *this;}
-		base_iterator operator--(int) {base_iterator tmp(*this); operator--(); return tmp;}
-*/
-	virtual	bool operator==(const base_iterator& rhs) const {return p == rhs.m();}
-	virtual	bool operator!=(const base_iterator& rhs) const {return p!=rhs.m();}
-	virtual	bool operator<(const base_iterator& rhs) const {return p < rhs.m();}
-	virtual	bool operator<=(const base_iterator& rhs) const {return p <= rhs.m();}
-	virtual	bool operator>(const base_iterator& rhs) const {return p > rhs.m();}
-	virtual	bool operator>=(const base_iterator& rhs) const {return p >= rhs.m();}
+		pointer m( void ) const { return p; };	
 
-//		const reference operator*() const {return *m;}
-//		const pointer  operator->() const {return m;}
-/*		base_iterator operator+( const int & nbr ) { return base_iterator( m + nbr ) ;}
-		base_iterator &operator+=( const int & nbr ) { m += nbr; return *this; }
-		base_iterator operator-( const int & nbr ) { return base_iterator( m - nbr ) ;}
-		base_iterator &operator-=( const int & nbr ) { m -= nbr; return *this; }
-		difference_type operator-( const base_iterator & other ) { return m - other.m;}
-*/
+		friend	bool operator==(const base_iterator&lhs, const base_iterator& rhs) {return lhs.m() == rhs.m();}
+		friend	bool operator!=(const base_iterator&lhs, const base_iterator& rhs) {return lhs.m() !=rhs.m();}
+		friend	bool operator<(const base_iterator&lhs, const base_iterator& rhs) {return lhs.m() < rhs.m();}
+		friend	bool operator<=(const base_iterator&lhs, const base_iterator& rhs) {return lhs.m() <= rhs.m();}
+		friend	bool operator>(const base_iterator&lhs, const base_iterator& rhs) {return lhs.m() > rhs.m();}
+		friend	bool operator>=(const base_iterator&lhs, const base_iterator& rhs) {return lhs.m() >= rhs.m();}
 
 
-		 pointer m( void ) const { return p; };	
+		protected:
+
+		pointer p;
 	};
 
 	template <class Category, class T, class Distance = ptrdiff_t,
@@ -101,32 +90,25 @@ namespace ft {
 
         return *this;
 		}
+		pointer m( void ) const { return this->p; };	
+		reference operator*() const {return *this->p;}
 
+		const_iterator operator+( difference_type n ) const { return const_iterator( this->base_iterator::m() + n ) ;}
+		friend const_iterator operator+( difference_type n, const_iterator it ) { return const_iterator( it.base_iterator::m() + n ); }
 		const_iterator& operator++() { ++this->p; return *this;}
 		const_iterator operator++(int) {const_iterator tmp(*this); operator++(); return tmp;}
+		const_iterator &operator+=( difference_type n ) { this->p += n; return *this; }
+
+		const_iterator operator-( difference_type n ) const { return const_iterator( this->p - n ) ;}
+		friend difference_type operator-( const const_iterator & lhs, const const_iterator & rhs ) { return lhs.m() - rhs.m(); }
 		const_iterator& operator--() { --this->p; return *this;}
 		const_iterator operator--(int) {const_iterator tmp(*this); operator--(); return tmp;}
-/*	bool operator==(const const_iterator& rhs) const {return this->p==rhs.this->p;}
-	bool operator!=(const const_iterator& rhs) const {return this->p!=rhs.this->p;}
-	bool operator<(const const_iterator& rhs) const {return this->p < rhs.this->p;}
-	bool operator<=(const const_iterator& rhs) const {return this->p <= rhs.this->p;}
-	bool operator>(const const_iterator& rhs) const {return this->p > rhs.this->p;}
-	bool operator>=(const const_iterator& rhs) const {return this->p >= rhs.this->p;}
-*/ 
-		reference  operator*() const {return *this->p;}
-		pointer  operator->() const {return this->p;}
+		const_iterator &operator-=( difference_type n ) { this->p -= n; return *this; }
 
-		friend const_iterator operator+( const_iterator it, const int & nbr ) { return const_iterator( it.base_iterator::m() + nbr ) ;}
-		friend const_iterator operator+( const int & nbr, const_iterator it ) { return const_iterator( it.base_iterator::m() + nbr ) ;}
+		pointer operator->() const {return this->p;}
 
+		reference operator[] ( difference_type n ) { return *(this->p + n); }
 
-		const_iterator &operator+=( const int & nbr ) { this->p += nbr; return *this; }
-		const_iterator operator-( const int & nbr ) { return const_iterator( this->p - nbr ) ;}
-		const_iterator &operator-=( const int & nbr ) { this->p -= nbr; return *this; }
-		difference_type operator-( const const_iterator & other ) const { return this->p - other.m();}
-		
-		const reference operator[] (const int & nbr ) const { return *(this->p + nbr); }
-		pointer m( void ) const { return this->p; };	
 
 	};
 
@@ -157,24 +139,27 @@ namespace ft {
         return *this;
 		}
 
+		pointer m( void ) const { return this->p; };	
+		reference operator*() const {return *this->p;}
+
+		iterator operator+( difference_type n ) const { return iterator( this->m() + n ) ;}
+		friend iterator operator+( difference_type n, iterator it ) { return iterator( it.m() + n ); }
 		iterator& operator++() { ++this->p; return *this;}
 		iterator operator++(int) {iterator tmp(*this); operator++(); return tmp;}
+		iterator &operator+=( difference_type n ) { this->p += n; return *this; }
+
+		iterator operator-( difference_type n ) const { return iterator( this->p - n ) ;}
+		friend difference_type operator-( const iterator & lhs, const iterator & rhs ) { return lhs.m() - rhs.m(); }
 		iterator& operator--() { --this->p; return *this;}
 		iterator operator--(int) {iterator tmp(*this); operator--(); return tmp;}
+		iterator &operator-=( difference_type n ) { this->p -= n; return *this; }
 
-		reference operator*() {return *this->p;}
-		pointer  operator->() {return this->p;}
+		pointer operator->() const {return this->p;}
 
-		friend iterator operator+( iterator it, const int & nbr ) { return iterator( it.m() + nbr ) ;}
-		friend iterator operator+( const int & nbr, iterator it ) { return iterator( it.m() + nbr ) ;}
-		iterator &operator+=( const int & nbr ) { this->p += nbr; return *this; }
-		iterator operator-( const int & nbr ) { return iterator( this->p - nbr ) ;}
-		iterator &operator-=( const int & nbr ) { this->p -= nbr; return *this; }
-		difference_type operator-( const iterator & other ) { return this->p - other.m();}
-		reference operator[] (const int & nbr ) { return *(this->p + nbr); }
+		reference operator[] ( difference_type n ) { return *(this->p + n); }
 
-		 pointer m( void ) const { return this->p; };	
 	};
+
 
 
 	template < class T, class Alloc = std::allocator<T> >
@@ -313,8 +298,7 @@ namespace ft {
 
 		size_type max_size() const {
 
-			return std::numeric_limits<difference_type>::max();
-			//return ( ( std::powl( 2, 64 ) ) / sizeof( value_type ) - 1 ) ;
+			return _alloc.max_size();
 		}
 
 		void resize (size_type n, value_type val = value_type()) {

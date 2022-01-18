@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/13 02:10:04 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/18 18:53:37 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MAP_HPP
 
 # include "utilities.hpp"
+# include <iterator>
 
 namespace ft {
 
@@ -29,12 +30,143 @@ namespace ft {
 
  template <class Category, class T, class Distance = ptrdiff_t,
         class Pointer = T*, class Reference = T&>
-        struct m_iterator  {
+        struct m_const_iterator : std::iterator<Category, T> {
+
+        public:
+
+        typedef T         value_type;
+        typedef Distance  difference_type;
+        typedef Pointer   pointer;
+        typedef Reference reference;
+        typedef Category  iterator_category;
+
+		typedef s_node<value_type>  t_node;
+
+        m_const_iterator() : p(0), node(0), root(0) {}
+        m_const_iterator( pointer x, t_node *nd, t_node *rt ) : p( x ), node(nd), root( rt ) {}
+        m_const_iterator(const m_const_iterator& mit) : p (mit.p), node(mit.node), root( mit.root)  {}
+        m_const_iterator & operator=( m_const_iterator const & other ) {
+
+            if( this != &other ) {
+                p = other.p;
+				node = other.node;
+				root = other.root;
+            }
+
+        return *this;
+        }
+
+		m_const_iterator& operator++() {
+
+			if ( !node ) {
+				
+				node = front( root ); 
+				p = node->content; 
+				return *this;
+			}
+			node = inc( node );
+			if ( node )
+				p = node->content;
+			else
+				p = NULL;	
+					
+			return *this;
+		}
+        m_const_iterator operator++(int) {m_const_iterator tmp(*this); operator++(); return tmp;}
+        m_const_iterator& operator--()  {
+
+			if ( !node ) {
+				
+				node = back( root ); 
+				p = node->content; 
+				return *this;
+			}
+			node = dec( node );
+			if ( node )
+				p = node->content;
+			else
+				p = NULL;	
+					
+			return *this;
+    	}
+
+        m_const_iterator operator--(int) {m_const_iterator tmp(*this); operator--(); return tmp;}
+        bool operator==(const m_const_iterator& rhs) const {return p==rhs.p;}
+        bool operator!=(const m_const_iterator& rhs) const {return p!=rhs.p;}
+        bool operator<(const m_const_iterator& rhs) const {return p < rhs.p;}
+        bool operator<=(const m_const_iterator& rhs) const {return p <= rhs.p;}
+        bool operator>(const m_const_iterator& rhs) const {return p > rhs.p;}
+        bool operator>=(const m_const_iterator& rhs) const {return p >= rhs.p;}
+        reference operator*() const {return *(p);}
+        pointer operator->() const {return p;}
+		
+		private:
 
 
 
-		private: 
+		t_node *inc( t_node * &x) {
 
+			if ( x->right != NULL )
+				return front( x->right );
+			
+			t_node *y = x->parent;
+
+			while( y != NULL && x == y->right ) {
+
+				x = y;
+				y = y->parent;
+			}
+
+			return y;
+
+		}
+
+
+		t_node *dec( t_node * &x) {
+
+			if ( x->left != NULL )
+				return back( x->left );
+			
+			t_node *y = x->parent;
+
+			while( y != NULL && x == y->left ) {
+
+				x = y;
+				y = y->parent;
+			}
+
+			return y;
+
+		}
+
+		t_node *  back( t_node *tmp ) {
+
+			while ( tmp && tmp->right )
+				tmp = tmp->right;
+
+			return tmp;
+		}
+
+		t_node *  front( t_node *tmp ) {
+
+			while ( tmp && tmp->left )
+				tmp = tmp->left;
+
+			return tmp;
+		}
+
+		public:
+
+		pointer p;
+		t_node *node;
+		t_node *root;
+
+
+    };
+
+ template <class Category, class T, class Distance = ptrdiff_t,
+        class Pointer = T*, class Reference = T&>
+        struct m_iterator : m_const_iterator< Category, T > {
 
         public:
 
@@ -101,8 +233,8 @@ namespace ft {
         bool operator<=(const m_iterator& rhs) const {return p <= rhs.p;}
         bool operator>(const m_iterator& rhs) const {return p > rhs.p;}
         bool operator>=(const m_iterator& rhs) const {return p >= rhs.p;}
-        reference operator*() {return *(p);}
-        pointer operator->() {return p;}
+      //  reference operator*() const {return *(p);}
+      //  pointer operator->() cosn{return p;}
 		
 		private:
 
@@ -199,7 +331,7 @@ namespace ft {
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::const_pointer const_pointer;
 		typedef ft::m_iterator<std::random_access_iterator_tag, value_type> iterator;
-		typedef const ft::m_iterator<std::random_access_iterator_tag, value_type> const_iterator;
+		typedef ft::m_const_iterator<std::random_access_iterator_tag, value_type> const_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type difference_type;
@@ -598,7 +730,7 @@ namespace ft {
 		bool operator<  ( const map<Key,T,Compare,Alloc>& lhs,
 			const map<Key,T,Compare,Alloc>& rhs ) {
 		
-		return ft::lexicographical_compare( lhs.begin(), lhs.end(), rhs.begin() );
+		return ft::lexicographical_compare( lhs.begin(), lhs.end(), rhs.begin(), rhs.end() );
 	}
 
 	template <class Key, class T, class Compare, class Alloc>

@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/17 23:08:43 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/19 03:55:52 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -451,7 +451,7 @@ int main( void ) {
 	ft_print( vct17 );
 	std::cout << "vct16.begin: " << *swapit2 << std::endl;
 	std::cout << "vct17.begin: " << *swapit1 << std::endl;
-/*
+
 //++++++++++++STACK++++++++++++++
 
 //=====CONSTRUCTOR=====
@@ -692,12 +692,13 @@ int main( void ) {
 
 	std::cout << "upper bound points to: ";
 	std::cout << map3.equal_range( 'b' ).second->first << std::endl; 
-*/	
+
+/*
 	empty_test( ft::vector<int>() );
 	rend_test( vct1 );
 	std::cout << "vct15 contains: ";
 	ft_print( vct15 );
-/*	std::cout << *(vct15.rend() - 1) << std::endl;
+	std::cout << *(vct15.rend() - 1) << std::endl;
 	std::cout << *(vct15.rend() - 2) << std::endl;
 	std::cout << *(vct15.begin() += 1 ) << std::endl;
 	std::cout << *(vct15.begin() += 2 ) << std::endl;
@@ -707,9 +708,9 @@ int main( void ) {
 	 iterator_test(vct15);
 	resize_test(vct15); 
 	assign_std_test( vct15);
-*/
 
-//	vector<int>::const_iterator it = vct15.begin();
+
+	vector<int>::const_iterator it = vct15.begin();
 	ft::vector<int> vct30;
 	std::cout << "vct30 contains: ";
 	ft_print( vct30 );
@@ -733,4 +734,5 @@ int main( void ) {
 	ft::vector<std::string> vct32;
 	std::cout << vct31.max_size() << std::endl;
 	std::cout << vct32.max_size() << std::endl;
+	*/
 }

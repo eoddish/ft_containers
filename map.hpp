@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/19 04:13:06 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/22 02:19:49 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 
 # include "utilities.hpp"
 # include <iterator>
+# include <unistd.h>
+# include <cmath>
+# include <algorithm>
 
 namespace ft {
 
@@ -26,11 +29,11 @@ namespace ft {
 			struct s_node *right;
 			struct s_node *parent;
 			
-			int rob;
+//			int rob;
 		} ;
 
  template <class Category, class T, class Distance = ptrdiff_t,
-        class Pointer = T*, class Reference = T&>
+        class Pointer = const T*, class Reference = const T&>
         struct m_const_iterator : std::iterator<Category, T> {
 
         public:
@@ -44,9 +47,9 @@ namespace ft {
 		typedef s_node<value_type>  t_node;
 
         m_const_iterator() : p(0), node(0), root(0) {}
-        m_const_iterator( pointer x, t_node *nd, t_node *rt ) : p( x ), node(nd), root( rt ) {}
+        m_const_iterator( T* x, t_node *nd, t_node *rt ) : p( x ), node(nd), root( rt ) {}
         m_const_iterator(const m_const_iterator& mit) : p (mit.p), node(mit.node), root( mit.root)  {}
-        virtual m_const_iterator & operator=( m_const_iterator const & other ) {
+        m_const_iterator & operator=( m_const_iterator const & other ) {
 
             if( this != &other ) {
                 p = other.p;
@@ -57,10 +60,9 @@ namespace ft {
         return *this;
         }
 
-		virtual m_const_iterator& operator++() {
+		m_const_iterator& operator++() {
 
 			if ( !node ) {
-				
 				node = front( root ); 
 				p = node->content; 
 				return *this;
@@ -73,8 +75,8 @@ namespace ft {
 					
 			return *this;
 		}
-        virtual m_const_iterator operator++(int) {m_const_iterator tmp(*this); operator++(); return tmp;}
-       virtual m_const_iterator& operator--()  {
+        m_const_iterator operator++(int) {m_const_iterator tmp(*this); operator++(); return tmp;}
+       m_const_iterator& operator--()  {
 
 			if ( !node ) {
 				
@@ -91,17 +93,18 @@ namespace ft {
 			return *this;
     	}
 
-       virtual  m_const_iterator operator--(int) {m_const_iterator tmp(*this); operator--(); return tmp;}
+       m_const_iterator operator--(int) {m_const_iterator tmp(*this); operator--(); return tmp;}
+
        virtual  bool operator==(const m_const_iterator& rhs) const {return p==rhs.p;}
        virtual  bool operator!=(const m_const_iterator& rhs) const {return p!=rhs.p;}
        virtual  bool operator<(const m_const_iterator& rhs) const {return p < rhs.p;}
        virtual  bool operator<=(const m_const_iterator& rhs) const {return p <= rhs.p;}
        virtual  bool operator>(const m_const_iterator& rhs) const {return p > rhs.p;}
        virtual  bool operator>=(const m_const_iterator& rhs) const {return p >= rhs.p;}
-        virtual reference operator*() const {return *(p);}
-        virtual pointer operator->() const {return p;}
+        const T& operator*() const {return *(p);}
+        const T* operator->() const {return p;}
 		
-		private:
+		protected:
 
 
 
@@ -117,7 +120,6 @@ namespace ft {
 				x = y;
 				y = y->parent;
 			}
-
 			return y;
 
 		}
@@ -156,13 +158,16 @@ namespace ft {
 			return tmp;
 		}
 
+		protected:
+
+		T* p;
+
 		public:
 
-		pointer p;
 		t_node *node;
+		protected:
+
 		t_node *root;
-
-
     };
 
  template <class Category, class T, class Distance = ptrdiff_t,
@@ -183,64 +188,67 @@ namespace ft {
         m_iterator() : m_const_iterator( 0, 0, 0 ) {}
         m_iterator( pointer x, t_node *nd, t_node *rt ) : m_const_iterator( x, nd, rt ) {}
         m_iterator(const m_iterator& mit) : m_const_iterator( mit.p, mit.node, mit.root)  {}
-//        m_iterator & operator=( m_iterator const & other ) {
-//
-//            if( this != &other ) {
-//                p = other.p;
-//				node = other.node;
-//				root = other.root;
-//            }
-//
-//        return *this;
-//        }
-//
-//		m_iterator& operator++() {
-//
-//			if ( !node ) {
-//				
-//				node = front( root ); 
-//				p = node->content; 
-//				return *this;
-//			}
-//			node = inc( node );
-//			if ( node )
-//				p = node->content;
-//			else
-//				p = NULL;	
-//					
-//			return *this;
-//		}
-//        m_iterator operator++(int) {m_iterator tmp(*this); operator++(); return tmp;}
-//        m_iterator& operator--()  {
-//
-//			if ( !node ) {
-//				
-//				node = back( root ); 
-//				p = node->content; 
-//				return *this;
-//			}
-//			node = dec( node );
-//			if ( node )
-//				p = node->content;
-//			else
-//				p = NULL;	
-//					
-//			return *this;
-//    	}
-//
-//        m_iterator operator--(int) {m_iterator tmp(*this); operator--(); return tmp;}
-//        bool operator==(const m_iterator& rhs) const {return p==rhs.p;}
-//        bool operator!=(const m_iterator& rhs) const {return p!=rhs.p;}
-//        bool operator<(const m_iterator& rhs) const {return p < rhs.p;}
-//        bool operator<=(const m_iterator& rhs) const {return p <= rhs.p;}
-//        bool operator>(const m_iterator& rhs) const {return p > rhs.p;}
-//        bool operator>=(const m_iterator& rhs) const {return p >= rhs.p;}
-//      //  reference operator*() const {return *(p);}
-//      //  pointer operator->() cosn{return p;}
-//		
-//		private:
-//
-//
+        m_iterator & operator=( m_iterator const & other ) {
+
+            if( this != &other ) {
+                this->p = other.p;
+				this->node = other.node;
+				this->root = other.root;
+            }
+
+        return *this;
+        }
+
+		m_iterator& operator++() {
+
+			if ( !this->node ) {
+				
+				this->node = this->front( this->root ); 
+				this->p = this->node->content; 
+				return *this;
+			}
+			this->node = this->inc( this->node );
+			if ( this->node )
+				this->p = this->node->content;
+			else {
+
+				this->p = NULL;	
+				}
+					
+			return *this;
+		}
+        m_iterator operator++(int) {m_iterator tmp(*this); operator++(); return tmp;}
+        m_iterator& operator--()  {
+
+			if ( !this->node ) {
+				
+				this->node = this->back( this->root ); 
+				this->p = this->node->content; 
+				return *this;
+			}
+			this->node = this->dec( this->node );
+			if ( this->node )
+				this->p = this->node->content;
+			else
+				this->p = NULL;	
+					
+			return *this;
+    	}
+
+        m_iterator operator--(int) {m_iterator tmp(*this); operator--(); return tmp;}
+
+    //    bool operator==(const m_iterator& rhs) const {return this->p==rhs.p;}
+    //    bool operator!=(const m_iterator& rhs) const {return this->p!=rhs.p;}
+    //    bool operator<(const m_iterator& rhs) const {return this->p < rhs.p;}
+    //    bool operator<=(const m_iterator& rhs) const {return this->p <= rhs.p;}
+    //    bool operator>(const m_iterator& rhs) const {return this->p > rhs.p;}
+    //    bool operator>=(const m_iterator& rhs) const {return this->p >= rhs.p;}
+        reference operator*() const {return *(this->p);}
+        pointer operator->() const {return this->p;}
+		
+		private:
+
+
 //
 //		t_node *inc( t_node * &x) {
 //
@@ -438,7 +446,8 @@ namespace ft {
 
 		size_type max_size() const {
 
-			return    std::min(_alloc.max_size(), _t_node_alloc.max_size() );
+			return (std::powl(2, 64 ) - 1 ) / ( sizeof(t_node) + std::max( sizeof( value_type), sizeof( pointer )  ) ) ;
+
 		}
 		mapped_type& operator[] (const key_type& k) {
 
@@ -452,14 +461,26 @@ namespace ft {
 
 		ft::pair<iterator,bool> insert (const value_type& val) {
 
-			return ft_search( this->_bst, val, NULL );
+			t_node *tmp = NULL;
+			return ft_search( this->_bst, val, tmp );
 		}
 
 
 		iterator insert (iterator position, const value_type& val) {
 
-			return ft_search( position.node, val, NULL ).first;
-		}
+			t_node *tmp = NULL;
+			iterator temp = position;
+			if ( _size == 0 || position == end() )
+				return ft_search( this->_bst, val, tmp ).first;
+			
+			if ( !_vcomp( *position, val ) && ( !_vcomp( val, *position ) ) )
+				return position;
+			else if ( _vcomp( *position, val ) && ( _vcomp( val, *(++temp) ) ) ) 
+				return ft_search( position.node, val, tmp ).first; 
+			else
+				return ft_search( this->_bst, val, tmp ).first;
+			
+			}
 
 		template <class InputIterator>
   		void insert (InputIterator first, InputIterator last) {
@@ -473,6 +494,7 @@ namespace ft {
 		void erase (iterator position) {
 
 			ft_delete ( _bst, position.node );
+			
 			_size--;
 		}
 
@@ -488,16 +510,22 @@ namespace ft {
      
 	 	void erase (iterator first, iterator last) {
 
-			for( ; first != last; ++first ) 
-				erase( first );	
+			for( ; first != last;  ) {
+
+				iterator tmp = first;	
+				++first;
+				erase( tmp );
+				}	
 		}
 
 		void swap (map& x) {
 
-			map temp = x;
-			x = *this;
-			*this = temp;
-
+			t_node *tmp_bst = x._bst;
+			size_type tmp_size = x._size;
+			x._bst = this->_bst;
+			x._size = this->_size;
+			this->_bst = tmp_bst;
+			this->_size = tmp_size;
 		}
 	
 		void clear() {
@@ -617,7 +645,7 @@ namespace ft {
 		typedef typename allocator_type::template rebind<t_node>::other t_node_allocator_type;
 		t_node_allocator_type _t_node_alloc;
 
-		ft::pair <iterator, bool> ft_search( t_node * &tmp, const value_type& val, t_node *parent ) {
+		ft::pair <iterator, bool> ft_search( t_node * &tmp, const value_type& val, t_node *&parent ) {
 
 
 			if ( !tmp ) {
@@ -642,14 +670,85 @@ namespace ft {
 			return	ft_search( tmp->right, val, tmp );
 
 		}
+		/*
+		ft::pair < iterator, bool> ft_search( t_node *x, const value_type &val ) {
+		
+			while ( x != NULL && val.first != x->content->first ) {
 
+				if ( _comp( val.first, x->content->first )
+					x = x.left;
+				else
+					x = x.right;
+
+			}
+			return 
+		}
+	*/
+/*
+		ft_insert( t_node *&tree, t_node *z ) {
+
+			t_node *y = 0;
+			t_node *x = _bst;
+			while ( x != NULL ) {
+
+				y = x;
+				if ( _comp( z->content->first, x->content->first )
+					x = x->left;
+				else
+					x = x->right;
+			}
+			z.parent = y;
+			if ( y == NULL )
+				_bst = z;
+			else if ( _comp( z->content->first, y->content->first )
+				y->left = z;
+			else
+				y->right = z;
+		
+
+		}
+		*/
+
+/*		ft_insert2( iterator start , const value_type &val) {
+
+
+			for ( iterator it = start; it != begin() && _comp( it->first, val ); ++it ) {
+				
+				}
+
+			if ( it == end() )
+				return ft_insert2( begin(), val );
+			if ( !_comp( val, it->first ) )
+				return ft::make_pair<iterator, bool> ( it, false );
+			else {
+
+				if ( ft_insert( (--it).node, val, (++it).node ) ;
+			}
+
+
+
+		}
+
+*/
+/*		void ft_new_elem( t_node *tmp ) {
+			tmp = _t_node_alloc.allocate( 1 );
+			tmp->content = this->_alloc.allocate( 1 );
+			this->_alloc.construct( tmp->content, val );
+			tmp->left = 0;
+			tmp->right = 0;
+			tmp->parent = it.node;
+			this->_size++;
+			}
+*/
 		void ft_delete( t_node *&tree, t_node *&z ) {
 
-			if ( z->left == NULL )
-				ft_shift( tree, z, z->right );
-			else if ( z->right == NULL )
-				ft_shift( tree, z, z->left );
+			if ( z->left == NULL ) {
+
+				ft_shift( tree, z, z->right );}
+			else if ( z->right == NULL ) {
+				ft_shift( tree, z, z->left );}
 			else {
+
 				iterator it = find( z->content->first );
 				t_node *y = (++it).node;
 				if ( y->parent->content != z->content ) {
@@ -665,14 +764,17 @@ namespace ft {
 
 		void ft_shift( t_node *&tree, t_node *&u, t_node *&v ) {
 
-			if ( u->parent == NULL )
-				tree = v;
-			else if ( u->content == u->parent->left->content )
-				u->parent->left = v;
-			else
-				u->parent->right = v;
-			if ( v != NULL )
-				v->parent = u->parent;
+			if ( u->parent == NULL ) {
+
+				tree = v;}
+			else if ( u == u->parent->left ) {
+
+				u->parent->left = v;}
+			else {
+
+				u->parent->right = v; }
+			if ( v != NULL ) {
+				v->parent = u->parent; }
 		}
 
 		t_node *_tree_search( t_node *x, const key_type &key ) const {

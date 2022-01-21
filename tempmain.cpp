@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/19 03:55:52 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/22 01:56:44 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "map.hpp"
 #include <vector>
 #include <unistd.h>
+#include <map>
 
 template <typename T>
 std::vector<int> assign_std_test(ft::vector<T> vector) {
@@ -730,9 +731,31 @@ int main( void ) {
 	ittk = itti;
 	std::cout << ittk[0] << std::endl;
 	std::cout << ittk[0] << std::endl;
-	std::vector<std::string> vct31;
-	ft::vector<std::string> vct32;
-	std::cout << vct31.max_size() << std::endl;
-	std::cout << vct32.max_size() << std::endl;
 	*/
+	std::map<int,std::string> map10;
+	ft::map<int,std::string> map11;
+	std::cout << map10.max_size() << std::endl;
+	std::cout << map11.max_size() << std::endl;
+	
+	std::map<int,char> map12;
+	 ft::map<int, char> map13;
+	std::cout << map12.max_size() << std::endl;
+	std::cout << map13.max_size() << std::endl;
+	map13.insert(map13.begin(), ft::make_pair( 1, 'a' ));
+	map13.insert(map13.end(), ft::make_pair( 2, 'a' ));
+	for( ft::map<int,char>::iterator it = map13.begin(); it != map13.end(); ++it ) {
+
+		std::cout << it->first << std::endl;
+	}
+
+	 ft::map<int, char> const map16( map13.begin(), map13.end() );
+	ft::map<int,char>::const_iterator ittt = map13.begin();
+	//ittt->second = 'c';
+	std::cout << ittt->second << std::endl;
+	
+	std::map<int,float> map14;
+	ft::map<int, float> map15;
+	std::cout << map14.max_size() << std::endl;
+	std::cout << map15.max_size() << std::endl;
+	
 }

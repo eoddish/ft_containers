@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/22 01:56:44 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/23 02:56:47 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -473,8 +473,8 @@ int main( void ) {
 	std::cout << "size of stc2: " << stc2.size() << '\n';
 
 //=====TOP======
+	//std::cout << "top of stc1: " << stc1.top() << '\n';
 
-	std::cout << "top of stc1: " << stc1.top() << '\n';
 	stc2.push( 300 );
 	std::cout << "top of stc2: " << stc2.top() << '\n';
 

@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/22 16:32:47 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/12 01:15:44 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/22 21:17:46 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "vector.hpp"
 #include <iostream>
+#include "unistd.h"
 
 namespace ft {
 
@@ -28,6 +29,11 @@ namespace ft {
 		typedef size_t size_type;
 		
 		explicit stack (const container_type& ctnr = container_type()) : c( ctnr ) {};
+
+		~stack() {
+
+		}
+ 
 
 		size_type size() const {
 		
@@ -51,12 +57,13 @@ namespace ft {
 
 		void push (const value_type& val) {
 
-			return this->c.push_back( val );
+			c.push_back( val );
+			
 		}
 			
 		void pop() {
 
-			return this->c.pop_back();
+			this->c.pop_back();
 		}
 
 		friend	bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs) {

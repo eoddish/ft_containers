@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/23 02:56:47 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/26 19:00:58 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,36 @@
 #include <vector>
 #include <unistd.h>
 #include <map>
+
+class B {
+public:
+    char *l;
+    int i;
+    B():l(nullptr), i(1) {};
+    B(const int &ex) {
+        this->i = ex;
+        this->l = new char('a');
+    };
+    virtual ~B() {
+        delete this->l;
+        this->l = nullptr;
+    };
+};
+
+class A : public B {
+public:
+    A():B(){};
+    A(const B* ex){
+        this->l = new char(*(ex->l));
+        this->i = ex->i;
+        if (ex->i == -1) throw "n";
+    }
+    ~A() {
+        delete this->l;
+        this->l = nullptr;
+    };
+
+};
 
 template <typename T>
 std::vector<int> assign_std_test(ft::vector<T> vector) {
@@ -183,13 +213,28 @@ int main( void ) {
 	int i = 1;	
 //	long int i = 1;
 
+	//===== IS_INTEGRAL ===== 	
+
 	std::cout << "float: " << ft::is_integral<float>::value << std::endl;
 	std::cout << "intptr_t: " << ft::is_integral<intptr_t>::value << std::endl;
  	std::cout << "i is odd: " << is_odd(i) << std::endl;
 
+  if ( ft::is_integral<int>() )
+    std::cout << "int is an integral type" << std::endl;
+
+  // same result as:
+  if ( ft::is_integral<int>::value )
+    std::cout << "int is an integral type" << std::endl;
+
+
+	//===== EQUAL ===== 	
+
 	std::cout << ft::equal(vct2.begin(), vct2.end(), vct4.begin() ) << std::endl;
 
 	std::cout << ft::equal(vct2.begin(), vct2.end(), vct3.begin() ) << std::endl;
+
+	
+	//===== LEXICOGRAPHICAL_COMPARE ===== 	
 
 	char foo[]="Apple";
 	char bar[]="apartment";
@@ -202,9 +247,13 @@ int main( void ) {
 	std::cout << ft::lexicographical_compare(foo,foo+5,bar,bar+9,mycomp);
 	std::cout << '\n';
 
+	//===== PAIR =====
+
 	ft::pair <std::string,double> product1;                     // default constructor
 	ft::pair <std::string,double> product2 ("tomatoes",2.30);   // value init
 	ft::pair <std::string,double> product3 (product2);          // copy constructor
+
+	//===== MAKE_PAIR =====
 	
 	product1 = ft::make_pair(std::string("lightbulbs"),0.99);   // using make_pair (move)
 	
@@ -224,7 +273,7 @@ int main( void ) {
 	std::cout << "foo1: " << foo1.first << ", " << foo1.second << '\n';
 	std::cout << "bar1: " << bar1.first << ", " << bar1.second << '\n';
 
-
+	//===== REVERSE_ITERATOR =====
 
 	ft::vector<int> vct6 (5);  // 5 default-constructed ints
 
@@ -239,7 +288,11 @@ int main( void ) {
 	std::cout << ' ' << *it;
 	std::cout << '\n';
 
+	// ===== MAX_SIZE =====
+
 	std::cout << "vct6 max_size: " << vct6.max_size() << std::endl;
+
+	// ===== RESIZE =====
 
 	ft::vector<int> vct7;
 	
@@ -757,5 +810,244 @@ int main( void ) {
 	ft::map<int, float> map15;
 	std::cout << map14.max_size() << std::endl;
 	std::cout << map15.max_size() << std::endl;
+
+	std::cout << std::endl;
+
+    std::cout << (typeid(std::vector<int>::const_iterator::iterator_category).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_iterator::value_type).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_iterator::difference_type).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_iterator::iterator_type).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_iterator::pointer).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_iterator::reference).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_reverse_iterator::iterator_category).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_reverse_iterator::value_type).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_reverse_iterator::difference_type).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_reverse_iterator::pointer).name()) << std::endl;
+    std::cout << (typeid(std::vector<int>::const_reverse_iterator::reference).name()) << std::endl;
+
+	std::cout << std::endl;
+
+    std::cout << (typeid(ft::vector<int>::const_iterator::iterator_category).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_iterator::value_type).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_iterator::difference_type).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_iterator::iterator_type).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_iterator::pointer).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_iterator::reference).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_reverse_iterator::iterator_category).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_reverse_iterator::value_type).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_reverse_iterator::difference_type).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_reverse_iterator::pointer).name()) << std::endl;
+    std::cout << (typeid(ft::vector<int>::const_reverse_iterator::reference).name()) << std::endl;
+
+
+	ft::map<int, int> mp;
+	 std::vector<int> v;
+    v.push_back(mp.erase(3));
+    for (int i = 0, j = 0; i < 30; ++i, ++j)
+        mp.insert(ft::make_pair(i, j));
+    ft::map<int, int>::iterator it25 = mp.begin();
+    v.push_back(it25->first);
+    v.push_back(mp.erase(-5));
+    v.push_back(mp.size());
+    v.push_back(mp.erase(0));
+    v.push_back(mp.size());
+
+    it25 = mp.begin();
+    v.push_back(it25->first);
+    ft::map<int, int>::iterator it4 = mp.begin();
+    for (; it4 != mp.end(); it4 = mp.begin())
+        mp.erase(it4->first);
+     ft::map<int, int>::iterator it2 = mp.end();
+
+    it2--;
+
+
+    v.push_back(mp.erase(30  - 1));
+    v.push_back(mp.size());
+    ft::map<int, int> mp2;
+    for (int i = 0, j = 0; i < 10 ; ++i, ++j)
+        mp2.insert(ft::make_pair(i, j));
+    mp2.erase(2);
+    mp2.erase(7);
+     ft::map<int, int>::iterator it3 = mp2.begin();
+    for (; it3 != mp2.end(); ++it3) {
+        v.push_back(it3->first);
+        v.push_back(it3->second);
+    }
+
+	int _ratio = 1;
+/*
+	ft::vector<int> vector1;
+
+    vector1.assign(9900 * _ratio, 1);
+    vector1.resize(5000 * _ratio);
+    vector1.reserve(5000 * _ratio);
+    std::cout << (vector1.size()) << std::endl;
+    std::cout << (vector1.capacity()) << std::endl;
+    vector1.resize(7000 * _ratio);
+
+    std::cout << (vector1.size()) << std::endl;
+    std::cout << (vector1.capacity()) << std::endl;
+    vector1.resize(15300 * _ratio, int());
+
+    std::cout << (vector1.size()) << std::endl;
+    std::cout << (vector1.capacity()) << std::endl;
+
+    std::cout << (vector1[65]) << std::endl;
+
+	std::cout << std::endl;
+   	std::vector<int> vector2;
+ 
+    vector2.assign(9900 * _ratio, 1);
+    vector2.resize(5000 * _ratio);
+    vector2.reserve(5000 * _ratio);
+    std::cout << (vector2.size()) << std::endl;
+    std::cout << (vector2.capacity()) << std::endl;
+    vector2.resize(7000 * _ratio);
+
+    std::cout << (vector2.size()) << std::endl;
+    std::cout << (vector2.capacity()) << std::endl;
+    vector2.resize(15300 * _ratio, int());
+
+    std::cout << (vector2.size()) << std::endl;
+    std::cout << (vector2.capacity()) << std::endl;
+
+    std::cout << (vector2[65]) << std::endl;
+
+  */ 
+ /*  	
+	std::cout << std::endl;
+   	ft::vector<int> vector1;
+
+    vector1.assign(2600 * _ratio, 1);
+    std::cout << (*(vector1.insert(vector1.end() - 800 * _ratio, 44))) << std::endl;
+    std::cout << (vector1.size()) << std::endl; std::cout << (vector1.capacity()) << std::endl;
+    std::unique_ptr<B> k2(new B(3));
+    std::unique_ptr<B> k3(new B(4));
+    std::unique_ptr<B> k4(new B(-1));
+    ft::vector<A> vv;
+    ft::vector<B*> v1;
+
+    std::cout << (&(*k2)) << std::endl;
+    std::cout << (&(*k3)) << std::endl;
+    std::cout << (&(*k4)) << std::endl;
+    vv.insert(vv.begin(), v1.begin(), v1.end()); 
+        std::cout << vv.size() << std::endl;
+        std::cout << (vv.capacity()) << std::endl;
+
 	
+	std::cout << std::endl;
+   	std::vector<int> vector2;
+
+    vector2.assign(2600 * _ratio, 1);
+    std::cout << (*(vector2.insert(vector2.end() - 800 * _ratio, 44))) << std::endl;
+    std::cout << (vector2.size()) << std::endl;
+    std::cout << (vector2.capacity()) << std::endl;
+    std::unique_ptr<B> k5(new B(3));
+    std::unique_ptr<B> k6(new B(4));
+    std::unique_ptr<B> k7(new B(-1));
+    std::vector<A> vvn;
+    std::vector<B*> v1n;
+
+    std::cout << (&(*k5)) << std::endl;
+    std::cout << (&(*k6)) << std::endl;
+    std::cout << (&(*k7)) << std::endl;
+    vvn.insert(vvn.begin(), v1n.begin(), v1n.end()); 
+        std::cout << vvn.size() << std::endl;
+        std::cout << (vvn.capacity()) << std::endl;
+*/
+
+std::cout << std::endl;	
+    ft::vector<int> vector5;
+    ft::vector<int> tmp1;
+    tmp1.assign(2600 * _ratio, 1);
+    vector5.assign(4200 * _ratio, 1);
+    vector5.insert(vector5.end() - 1000 * _ratio, tmp1.begin(), tmp1.end());
+    std::cout << (vector5[3]) << std::endl;
+    std::cout << (vector5.size()) << std::endl;
+    std::cout << (vector5.capacity()) << std::endl;
+
+
+	std::cout << std::endl;	
+    std::vector<int> vector6;
+    std::vector<int> tmp2;
+    tmp2.assign(2600 * _ratio, 1);
+    vector6.assign(4200 * _ratio, 1);
+    vector6.insert(vector6.end() - 1000 * _ratio, tmp2.begin(), tmp2.end());
+    std::cout << (vector6[3]) << std::endl;
+    std::cout << (vector6.size()) << std::endl;
+    std::cout << (vector6.capacity()) << std::endl;
+
+	std::cout << std::endl;
+    ft::vector<int> vector7;
+    ft::vector<int> tmp3;
+    tmp3.assign(2600 * _ratio, 1);
+    vector7.assign(2200 * _ratio, 1);
+    vector7.insert(vector7.end() - 1400 * _ratio, tmp3.begin(), tmp3.end());
+    std::cout << (vector7[3]) << std::endl;
+    std::cout << (vector7.size()) << std::endl;
+    std::cout << (vector7.capacity()) << std::endl;
+
+
+	std::cout << std::endl;
+    std::vector<int> vector8;
+    std::vector<int> tmp4;
+    tmp4.assign(2600 * _ratio, 1);
+    vector8.assign(2200 * _ratio, 1);
+    vector8.insert(vector8.end() - 1400 * _ratio, tmp4.begin(), tmp4.end());
+    std::cout << (vector8[3]) << std::endl;
+    std::cout << (vector8.size()) << std::endl;
+    std::cout << (vector8.capacity()) << std::endl;
+	
+	std::cout << std::endl;
+	ft::vector<int> vector100;
+    std::vector<int> v100;
+    vector100.assign(2600 * _ratio, 1);
+    v100.push_back(*(vector100.insert(vector100.end() - 800 * _ratio, 44)));
+    v100.push_back(vector100.size());
+    v100.push_back(vector100.capacity());
+    std::unique_ptr<B> k12(new B(3));
+    std::unique_ptr<B> k13(new B(4));
+    std::unique_ptr<B> k14(new B(-1));
+    ft::vector<A> vv100;
+    ft::vector<B*> v1100;
+
+    v1100.push_back(&(*k12));
+    v1100.push_back(&(*k13));
+    v1100.push_back(&(*k14));
+    try { vv100.insert(vv100.begin(), v1100.begin(), v1100.end()); }
+    catch (...) {
+        v100.push_back(vv100.size());
+        v100.push_back(vv100.capacity());
+    }
+
+	std::cout << std::endl;
+    std::vector<int> vector200;
+    std::vector<int> v200;
+    vector200.assign(2600 * _ratio, 1);
+    v200.push_back(*(vector200.insert(vector200.end() - 800 * _ratio, 44)));
+    v200.push_back(vector200.size());
+    v200.push_back(vector200.capacity());
+    std::unique_ptr<B> k22(new B(3));
+    std::unique_ptr<B> k23(new B(4));
+    std::unique_ptr<B> k24(new B(-1));
+    std::vector<A> vv200;
+    std::vector<B*> v1200;
+
+    v1200.push_back(&(*k22));
+    v1200.push_back(&(*k23));
+    v1200.push_back(&(*k24));
+    try { vv200.insert(vv200.begin(), v1200.begin(), v1200.end());  }
+    catch (...) {
+        v200.push_back(vv200.size());
+        v200.push_back(vv200.capacity());
+    }
+
+	for( std::vector<int>::iterator prit = v100.begin(); prit != v100.end(); ++prit )
+	std::cout << *prit << std::endl;
+
+	std::cout << std::endl;
+
+	for( std::vector<int>::iterator prit = v200.begin(); prit != v200.end(); ++prit )
+	std::cout << *prit << std::endl;
 }

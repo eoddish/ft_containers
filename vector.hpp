@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/23 02:41:01 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/26 22:51:14 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ namespace ft {
 	    typedef Distance  difference_type;
 	    typedef Pointer   pointer;
 	    typedef Reference reference;
+	    typedef pointer	iterator_type;
 	    typedef Category  iterator_category;
 
 
@@ -55,7 +56,7 @@ namespace ft {
 		const_iterator &operator+=( difference_type n ) { this->p += n; return *this; }
 
 		const_iterator operator-( difference_type n ) const { return const_iterator( this->p - n ) ;}
-		friend difference_type operator-( const const_iterator & lhs, const const_iterator & rhs ) { return lhs.m() - rhs.m(); }
+		friend difference_type operator-( const const_iterator & lhs, const const_iterator & rhs ) { return lhs.p - rhs.p; }
 		const_iterator& operator--() { --this->p; return *this;}
 		const_iterator operator--(int) {const_iterator tmp(*this); operator--(); return tmp;}
 		const_iterator &operator-=( difference_type n ) { this->p -= n; return *this; }
@@ -89,6 +90,8 @@ namespace ft {
 	    typedef Pointer   pointer;
 	    typedef Reference reference;
 	    typedef Category  iterator_category;
+
+	    typedef pointer iterator_type;
 		typedef ft::const_iterator< Category, T > const_iterator;
 
 
@@ -191,7 +194,8 @@ namespace ft {
 		~vector( void ) {
 	
 			clear();
-			_alloc.deallocate( _p, capacity() );
+			if ( capacity() )
+				_alloc.deallocate( _p, capacity() );
 
 			return;
 		}
@@ -270,7 +274,8 @@ namespace ft {
 
 		void resize (size_type n, value_type val = value_type()) {
 
-			this->reserve( n );
+			if ( n > capacity() )
+				reserve( std::max( n, capacity() * 2 ) );
 			
 			if ( n > size() ) {
 				
@@ -307,11 +312,17 @@ namespace ft {
 			}
 
 			if ( n > this->capacity() ) {
+
 				
 				T* p = this->_alloc.allocate( n );
 				std::copy( begin(), end(), p );
-					if ( this->capacity() )
-				this->_alloc.deallocate( this->_p, this->capacity() );
+				if ( this->capacity() )
+				{
+					for ( iterator it = this->begin(); it != end(); ++it )
+						_alloc.destroy( _alloc.address( *it ) );
+
+					this->_alloc.deallocate( this->_p, this->capacity() );
+				}
 				this->_p = p;
 				this->_capacity = n;
 			}
@@ -416,12 +427,12 @@ namespace ft {
 
 			difference_type nbr = position - this->begin();
 			if ( this->size() == this->capacity() )
-				this->reserve( this->capacity() + 1 );
+				this->reserve( this->capacity() * 2 );
 			this->_size++;
 			position = this->begin() + nbr;
 			std::copy_backward( position , this->end() - 1, this->end() );
 
-			_alloc.construct( &(*position), val );
+			_alloc.construct( _alloc.address(*position), val );
 
 			return position; 
 		}
@@ -429,14 +440,14 @@ namespace ft {
     	void insert (iterator position, size_type n, const value_type& val) {
 
 			difference_type nbr = position - this->begin();
-			if ( this->size() + n > this->capacity() )
-				this->reserve( this->size()  + n );
+			if ( size() + n > capacity() )
+				reserve( std::max( size() + n, capacity() * 2 ) );
 			iterator oldend = this->end();
 			this->_size += n;
 			position = this->begin() + nbr;
 			std::copy_backward( position , oldend, this->end() );
 			for ( iterator it = position; it != position + n; ++it )
-				_alloc.construct( &(*it) , val );
+				_alloc.construct( _alloc.address(*it) , val );
 		}
 
 		template <class InputIterator>
@@ -446,15 +457,41 @@ namespace ft {
 			size_type n = 0;
 			for ( InputIterator it = first; it != last; ++it )
 				n++;
-			reserve( size() + n );
+
+			if ( size() + n > capacity() ) {
+				pointer check = _alloc.allocate( std::max( size() + n, capacity() * 2 ) );
+				position = check + offset;
+
+				for ( iterator it = position; it != position + n; ++it ) {
+					try {
+						_alloc.construct( _alloc.address(*it), *first );
+					}
+					catch( ... ) {
+						for( --it; it != position - 1; --it )	
+							_alloc.destroy( _alloc.address(*it));
+						_alloc.deallocate( check, std::max( size() + n, capacity() * 2 ) );
+						throw "Error";
+					}
+					++first;
+				}
+
+				std::copy( begin(), begin() + offset, check );				
+				std::copy( begin() + offset, end(), position + n );				
+				_alloc.deallocate( _p, capacity() );
+				_p = check;
+				_capacity = std::max( size() + n, capacity() * 2 ); 
+				_size += n;
+
+			} else {
+
 			iterator oldend = end();
 			position = begin() + offset;
-			_size += n;
-			std::copy_backward( position, oldend, end() );
-			for ( iterator it = position; it != position + n; ++it )
-			{
-				_alloc.construct( &(*it), *first );
+			std::copy_backward( position, oldend, end() + n);
+			for ( iterator it = position; it != position + n; ++it ) {
+				_alloc.construct( _alloc.address(*it), *first );
 				++first;
+			}
+			_size += n;
 			}
 		}
 

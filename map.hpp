@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/23 01:07:55 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/25 03:06:46 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ namespace ft {
 			return *this;
     	}
 
-       m_const_iterator operator--(int) {m_const_iterator tmp(*this); operator--(); return tmp;}
+       m_const_iterator operator--(int) {  m_const_iterator tmp(*this); operator--(); return tmp;}
 
        virtual  bool operator==(const m_const_iterator& rhs) const {return p==rhs.p;}
        virtual  bool operator!=(const m_const_iterator& rhs) const {return p!=rhs.p;}
@@ -225,7 +225,10 @@ namespace ft {
 			if ( !this->node ) {
 				
 				this->node = this->back( this->root ); 
-				this->p = this->node->content; 
+
+				if ( this->node )
+					this->p = this->node->content; 
+
 				return *this;
 			}
 			this->node = this->dec( this->node );
@@ -237,7 +240,13 @@ namespace ft {
 			return *this;
     	}
 
-        m_iterator operator--(int) {m_iterator tmp(*this); operator--(); return tmp;}
+        m_iterator operator--(int) {
+
+		m_iterator tmp(*this);
+
+		operator--();
+
+		return tmp;}
 
     //    bool operator==(const m_iterator& rhs) const {return this->p==rhs.p;}
     //    bool operator!=(const m_iterator& rhs) const {return this->p!=rhs.p;}
@@ -403,7 +412,7 @@ namespace ft {
 			t_node *tmp = _bst;
 			while ( tmp->left )
 				tmp = tmp->left;
-			return iterator( tmp->content, tmp, _bst );
+			return const_iterator( tmp->content, tmp, _bst );
 		}
 
 		iterator end() {
@@ -413,17 +422,17 @@ namespace ft {
 
 		const_iterator end() const {
 
-			return iterator( 0, 0, _bst  );
+			return const_iterator( 0, 0, _bst  );
 		}
 
 		reverse_iterator rbegin() {
 
-			return reverse_iterator( iterator( end() ) );
+			return reverse_iterator(  end()  );
 		}
 
 		const_reverse_iterator rbegin() const {
 
-			return reverse_iterator( iterator( end() ) );
+			return const_reverse_iterator(  end()  );
 		}
 
 		reverse_iterator rend() {
@@ -433,7 +442,7 @@ namespace ft {
 
 		const_reverse_iterator rend() const {
 
-			return reverse_iterator( begin() );
+			return const_reverse_iterator( begin() );
 		}
 
 		bool empty() const {
@@ -467,7 +476,24 @@ namespace ft {
 		}
 
 
+		T& at( const Key& key ) {
 
+			if ( find( key ) == end() )
+				throw std::out_of_range( "vector::_M_range_check" );
+			
+			return ( *( ( this->insert(ft::make_pair(key,mapped_type() ) ) ).first ) ).second;	
+			
+		}
+
+
+		const T& at( const Key& key ) const {
+
+			if ( find( key ) == end() )
+				throw std::out_of_range( "vector::_M_range_check" );
+			
+			return ( *( ( this->insert(ft::make_pair(key,mapped_type() ) ) ).first ) ).second;	
+		
+		}
 
 
 

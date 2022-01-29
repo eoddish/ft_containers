@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:32:11 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/26 19:00:58 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/29 01:11:03 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -561,11 +561,10 @@ int main( void ) {
 //===== CONSTRUCTORS =====
 
 	ft::map<char,int> map1;
-	
-	map1['d']=70;
-	map1['c']=50;
-	map1['b']=30;
 	map1['a']=10;
+	map1['b']=30;
+	map1['c']=50;
+	map1['d']=70;
 
 	std::cout << map1['a'] << std::endl;
 	std::cout << map1['b'] << std::endl;
@@ -573,7 +572,6 @@ int main( void ) {
 	std::cout << map1['d'] << std::endl;
 
 	std::cout << "size of map1: " << map1.size() << std::endl;
-
 	std::cout << "map1: " << std::endl;
 	for( ft::map<char, int>::iterator it = map1.begin(); it != map1.end(); ++it )
 		std::cout << (*it).first << " " << (*it).second << std::endl; 
@@ -656,6 +654,8 @@ int main( void ) {
 	//===== INSERT =====
 
 	map4.insert( map4.begin(), ft::make_pair( 'x', 2 ) );
+
+	std::cout << "**" << std::endl;
 	map4.insert( map4.begin(), ft::make_pair( 'y', 3 ) );
 
 	std::cout << "map4: " << std::endl;
@@ -843,9 +843,10 @@ int main( void ) {
 	ft::map<int, int> mp;
 	 std::vector<int> v;
     v.push_back(mp.erase(3));
+
     for (int i = 0, j = 0; i < 30; ++i, ++j)
         mp.insert(ft::make_pair(i, j));
-    ft::map<int, int>::iterator it25 = mp.begin();
+/*    ft::map<int, int>::iterator it25 = mp.begin();
     v.push_back(it25->first);
     v.push_back(mp.erase(-5));
     v.push_back(mp.size());
@@ -854,9 +855,38 @@ int main( void ) {
 
     it25 = mp.begin();
     v.push_back(it25->first);
+*/
     ft::map<int, int>::iterator it4 = mp.begin();
-    for (; it4 != mp.end(); it4 = mp.begin())
+
+	
+		std::cout << std::endl;
+
+    for (; it4 != mp.end(); it4 = mp.begin()) {
+
+	for( ft::map<int,int>::iterator it = mp.begin(); it != mp.end(); ++it ) {
+
+
+		std::cout << it->first << " " << it.node->bf << " ";
+
+		if ( it.node->left )
+		std::cout << "L: " << it.node->left->content->first << " ";
+
+		if ( it.node->right )
+		std::cout << "R: " << it.node->right->content->first << " ";
+
+		if ( it.node->parent )
+		std::cout << "parent: " << it.node->parent->content->first << " ";
+
+
+		std::cout << std::endl;
+
+
+	}
+
         mp.erase(it4->first);
+		std::cout << std::endl;
+		}
+
      ft::map<int, int>::iterator it2 = mp.end();
 
     it2--;

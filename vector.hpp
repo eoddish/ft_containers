@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/26 22:51:14 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/29 03:19:55 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,12 +280,12 @@ namespace ft {
 			if ( n > size() ) {
 				
 				for ( iterator it = end(); it != begin() + n; ++it )
-					_alloc.construct( &(*it), val );
+					_alloc.construct( _alloc.address(*it), val );
 			}
 			else if ( n < this->size() ) {
 
-				for ( iterator it = begin() + n ; it != this->end(); ++it) {
-					_alloc.destroy( &(*it) );
+				for ( iterator it = begin() + n ; it != this->end(); ++it ) {
+					_alloc.destroy( _alloc.address(*it) );
            		 }
 
 			}
@@ -497,7 +497,7 @@ namespace ft {
 
 		iterator erase (iterator position) {
 
-			_alloc.destroy( &(*position) );
+			_alloc.destroy( _alloc.address(*position) );
 			std::copy( position + 1, this->end(), position );
 			this->_size--;
 
@@ -522,7 +522,7 @@ namespace ft {
 			size_type tmp_capacity = x.capacity();
 			size_type tmp_size = x.size();
 
-			x._capacity = this->capacity();;
+			x._capacity = this->capacity();
 			x._size =  this->size() ;
 			x._p = this->_p;
 

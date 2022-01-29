@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/25 03:06:46 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/29 02:46:37 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ namespace ft {
 			struct s_node *right;
 			struct s_node *parent;
 			
-//			int rob;
+			int bf;
 		} ;
 
  template <class Category, class T, class Distance = ptrdiff_t,
@@ -366,7 +366,6 @@ namespace ft {
 			const allocator_type& alloc = allocator_type()) :
 			_alloc( alloc ), _comp( comp ), _vcomp( value_compare( _comp ) ),
 			_size ( 0 ), _bst( 0 ) {
-	
 			insert( first, last );
 
 			
@@ -456,16 +455,7 @@ namespace ft {
 		}
 
 		size_type max_size() const {
-/*
-			std::cout << "1. " << sizeof( t_node ) << std::endl;
-			std::cout << "2. " << sizeof( value_type ) << std::endl;
-			std::cout << "3. " << sizeof( pointer ) << std::endl;
-			std::cout << "4. " << sizeof( Key ) << std::endl;
-			std::cout << "5. " << sizeof( T ) << std::endl;
 
-
-//			return (  _t_node_alloc.max_size() + _alloc.max_size() )/ 2;
-*/
 			return (std::powl(2, 64 ) - 1 ) / ( sizeof(t_node) +  sizeof( value_type ) )   ;
 
 
@@ -500,31 +490,41 @@ namespace ft {
 		ft::pair<iterator,bool> insert (const value_type& val) {
 
 			t_node *tmp = NULL;
-			return ft_search( this->_bst, val, tmp );
+
+			ft::pair<iterator, bool> res = ft_search( this->_bst, val, tmp );
+			ft_rebalance( (res.first).node );
+			return res;
 		}
 
 
 		iterator insert (iterator position, const value_type& val) {
-
 			t_node *tmp = NULL;
 			iterator temp = position;
-			if ( _size == 0 || position == end() )
-				return ft_search( this->_bst, val, tmp ).first;
-			
-			if ( !_vcomp( *position, val ) && ( !_vcomp( val, *position ) ) )
-				return position;
-			else if ( _vcomp( *position, val ) && ( _vcomp( val, *(++temp) ) ) ) 
-				return ft_search( position.node, val, tmp ).first; 
-			else
-				return ft_search( this->_bst, val, tmp ).first;
-			
+			if ( _size == 0 || position == end() ) {
+
+				iterator res = ft_search( this->_bst, val, tmp ).first;
+				ft_rebalance( res.node );
+
+				return res;
+			} else if ( _vcomp( *position, val ) && ( _vcomp( val, *(++temp) ) ) ) {
+
+				iterator res =  ft_search( position.node, val, tmp ).first; 
+				ft_rebalance( res.node );
+
+				return res;
+			} else {
+
+				iterator res = ft_search( this->_bst, val, tmp ).first;
+				ft_rebalance( res.node );
+
+				return res;
 			}
+		}
 
 		template <class InputIterator>
   		void insert (InputIterator first, InputIterator last) {
 
 			for ( InputIterator it = first; it != last; ++it ) {
-			
 				insert( *it );
 			}
 		}
@@ -532,7 +532,6 @@ namespace ft {
 		void erase (iterator position) {
 
 			ft_delete ( _bst, position.node );
-
 			_alloc.destroy( _alloc.address( *position ) );
 			_alloc.deallocate( _alloc.address( *position ), 1 ); 
 			_t_node_alloc.destroy( position.node );
@@ -621,9 +620,8 @@ namespace ft {
 
 			iterator it = begin();
 
-			for ( ; it != end(); ++it ) {
-				if ( !key_comp()( it->first, k ) )
-					return it;
+			for ( ; it != end() && _comp( it->first, k ); ++it ) {
+				;
 			}
 			return it;
 		}
@@ -631,10 +629,9 @@ namespace ft {
 		const_iterator lower_bound (const key_type& k) const {
 
 			const_iterator it = begin();
-			for ( ; it != end(); ++it ) {
 
-				if ( !key_comp()( it->first, k ) )
-					return it;
+			for ( ; it != end() && _comp( it->first, k ); ++it ) {
+				;
 			}
 			return it;
 		}	
@@ -642,10 +639,8 @@ namespace ft {
 		iterator upper_bound (const key_type& k) {
 
 			iterator it = begin();
-			for ( ; it != end(); ++it ) {
-
-				if ( key_comp()( k, it->first ) )
-					return it;
+			for ( ; it != end() && !_comp( k, it->first ); ++it ) {
+				;
 			}
 
 			return it;
@@ -654,10 +649,9 @@ namespace ft {
 		const_iterator upper_bound (const key_type& k) const {
 
 			const_iterator it = begin();
-			for ( ; it != end(); ++it ) {
 
-				if ( key_comp()( k, it->first ) )
-					return it;
+			for ( ; it != end() && !_comp( k, it->first ); ++it ) {
+				;
 			}
 			return it;
 
@@ -698,9 +692,11 @@ namespace ft {
 				this->_alloc.construct( tmp->content, val );
 				tmp->left = 0;
 				tmp->right = 0;
+				tmp->bf = 0;
 				tmp->parent = parent;
 				this->_size++;
 
+				
 				return ft::make_pair<iterator, bool> ( iterator( tmp->content, tmp, _bst ) , true);
 			}
 
@@ -712,35 +708,320 @@ namespace ft {
 				
 			return	ft_search( tmp->right, val, tmp );
 
+		} 
+
+		void ft_rebalance( t_node *Z) {
+				t_node *G = NULL;
+				t_node *N = NULL;
+
+				for ( t_node *X = Z->parent; X != NULL; X = Z->parent ) {
+
+
+					if ( Z == X->right ) {
+
+
+						if ( X->bf > 0 ) {
+		
+
+			
+
+							G = X->parent;
+							if ( Z->bf < 0 )
+								N = rotate_RL( X, Z );
+							else
+								N = rotate_L( X, Z );
+
+						} else {
+			
+
+						
+							if ( X->bf < 0 ) {
+								
+								X->bf = 0;
+								break;
+							}
+
+							X->bf = 1;
+							Z = X;
+							continue;
+						}
+
+
+					} else {
+
+						if ( X->bf < 0 ) {
+
+							G = X->parent;
+							if ( Z->bf > 0 )
+								N = rotate_LR( X, Z );
+							else
+								N = rotate_R( X, Z );
+							
+						} else {
+
+							if ( X->bf > 0 ) {
+
+								X->bf = 0;
+								break;
+							}
+							X->bf = -1;
+							Z = X;
+							continue;
+						}
+
+					}
+
+					N->parent = G;
+
+
+					if ( G != NULL ) {
+
+	
+						if ( X == G->left )
+							G->left = N;
+						else
+							G->right = N;
+
+					} else {
+						_bst = N;
+
+						
+					}
+					break;
+				}
+				}
+
+		void ft_retrace( t_node *N ) {
+			t_node *G = NULL;
+			t_node *Z = NULL;
+			int b = 0;
+			for ( t_node *X = N->parent; X != NULL; X = G ) {
+
+
+				G = X->parent;
+				if ( N == X->left ) {
+
+					if ( X->bf > 0 ) {
+
+						Z = X->right;	
+						b = Z->bf;
+						if ( b < 0 )
+							N = rotate_RL( X, Z );
+						else
+							N = rotate_L( X, Z );
+					} else {
+
+						if ( X->bf == 0 ) {
+
+							X->bf = 1;
+							break;
+						}
+						N = X;
+						N->bf = 0;
+						continue;
+					}
+				} else {
+
+					if ( X->bf < 0 ) {
+
+						Z = X->left;
+
+
+							b = Z->bf;
+
+						if ( b > 0 )
+							N = rotate_LR( X, Z );
+						else
+							N = rotate_R( X, Z );
+
+					} else {
+
+						if ( X->bf == 0 ) {
+
+							X->bf = -1;
+							break;
+						}
+						N = X;
+						N->bf = 0;
+						continue;
+					}
+				}
+
+				N->parent = G;
+				if ( G != NULL ) {
+
+					if ( X == G->left )
+						G->left = N;
+					else
+						G->right = N;
+				} else
+					_bst = N;
+				if ( b == 0 )
+					break;
+			}
+
+		}
+
+		t_node *rotate_L( t_node *X, t_node *Z ) {
+
+			t_node *T1 = Z->left;
+			X->right = T1;
+			if ( T1 != NULL )
+				T1->parent = X;
+			Z->left = X;
+			X->parent = Z;
+
+			if ( Z->bf == 0 ) {
+
+				X->bf = 1;
+				Z->bf = -1;
+
+			} else {
+
+				X->bf = 0;
+				Z->bf = 0;
+			}
+
+			return Z;
+		}
+
+		t_node *rotate_R( t_node *X, t_node *Z ) {
+
+			t_node *T1 = Z->right;
+			X->left = T1;
+			if ( T1 != NULL )
+				T1->parent = X;
+			Z->right = X;
+			X->parent = Z;
+
+			if ( Z->bf == 0 ) {
+
+				X->bf = -1;
+				Z->bf = 1;
+
+			} else {
+
+				X->bf = 0;
+				Z->bf = 0;
+			}
+
+			return Z;
+		}
+
+		t_node *rotate_RL( t_node *X, t_node *Z ) {
+
+			t_node *Y = Z->left;
+			t_node *T3 = Y->right;
+			Z->left = T3;
+
+			if ( T3 != NULL )
+				T3->parent= Z;
+			Y->right = Z;
+			Z->parent = Y;
+			t_node *T2 = Y->left;
+			X->right = T2;
+			if ( T2 != NULL )
+				T2->parent = X;
+			Y->left = X;
+			X->parent = Y;
+
+			if ( Y->bf == 0 ) {
+
+				X->bf = 0;
+				Z->bf = 0;
+			} else
+				if ( Y->bf > 0 ) {
+				
+					X->bf = -1;
+					Z->bf = 0;
+				} else {
+
+					X->bf = 0;
+					Z->bf = 1;
+				}
+			Y->bf = 0;
+			return Y;
+		}
+
+
+		t_node *rotate_LR( t_node *X, t_node *Z ) {
+
+			t_node *Y = Z->right;
+			t_node *T3 = Y->left;
+			Z->right = T3;
+
+			if ( T3 != NULL )
+				T3->parent= Z;
+			Y->left = Z;
+			Z->parent = Y;
+			t_node *T2 = Y->right;
+			X->left = T2;
+			if ( T2 != NULL )
+				T2->parent = X;
+			Y->right = X;
+			X->parent = Y;
+
+			if ( Y->bf == 0 ) {
+
+				X->bf = 0;
+				Z->bf = 0;
+			} else
+				if ( Y->bf < 0 ) {
+				
+					X->bf = -1;
+					Z->bf = 0;
+				} else {
+
+					X->bf = 0;
+					Z->bf = 1;
+				}
+			Y->bf = 0;
+			return Y;
 		}
 
 		void ft_delete( t_node *&tree, t_node *&z ) {
+		ft_retrace( z );
 
 			if ( z->left == NULL ) {
-
-				ft_shift( tree, z, z->right );}
+				ft_shift( tree, z, z->right );
+//				if ( z->parent )
+//					ft_retrace( z->parent ); 
+				}
 			else if ( z->right == NULL ) {
-				ft_shift( tree, z, z->left );}
-			else {
+				ft_shift( tree, z, z->left );
+//				if ( z->parent )
+//					ft_retrace( z->parent );
+			}
+			 else {
 
 				iterator it = find( z->content->first );
 				t_node *y = (++it).node;
-				if ( y->parent->content != z->content ) {
+				if ( y->parent != z ) {
 					ft_shift( tree, y, y->right );
 					y->right = z->right;
 					y->right->parent = y;
+
+					ft_shift( tree, z, y );
+					y->left = z->left;
+					y->left->parent = y;
+			//		ft_retrace( y->right ); 
+					return;
 				}
 				ft_shift( tree, z, y );
 				y->left = z->left;
 				y->left->parent = y;
+			//	ft_retrace( y ); 
 			}
+
 		}
 
 		void ft_shift( t_node *&tree, t_node *&u, t_node *&v ) {
 
 			if ( u->parent == NULL ) {
 
+				
 				tree = v;}
+
 			else if ( u == u->parent->left ) {
 
 				u->parent->left = v;}
@@ -775,6 +1056,8 @@ namespace ft {
 			
 			}
 		}
+
+		
 
 		public:
 

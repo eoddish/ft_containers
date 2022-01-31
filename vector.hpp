@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/29 03:19:55 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/30 00:41:37 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ namespace ft {
 
         return *this;
 		}
-		reference operator*() const {return *this->p;}
+		reference operator*() const {return *(this->p);}
 
 		const_iterator operator+( difference_type n ) const { return const_iterator( this->p + n ) ;}
 		friend const_iterator operator+( difference_type n, const_iterator it ) { return const_iterator( it.p + n ); }
@@ -108,7 +108,7 @@ namespace ft {
         return *this;
 		}
 
-		reference operator*() const {return *this->p;}
+		reference operator*() const {return *(this->p);}
 
 		iterator operator+( difference_type n ) const { return iterator( this->p + n ) ;}
 		friend iterator operator+( difference_type n, iterator it ) { return iterator( it.p + n ); }
@@ -161,9 +161,11 @@ namespace ft {
 			
 			
 			this->_p = this->_alloc.allocate( this->capacity() );
-			for ( iterator it = this->begin() ; it != this->end(); ++it) {
+			std::fill( begin(), end(), val );
+		/*	for ( iterator it = this->begin() ; it != this->end(); ++it) {
 				_alloc.construct( _alloc.address(*it), val );	
 			}
+			*/
 			return;
 		}
 
@@ -176,10 +178,12 @@ namespace ft {
 			this->_capacity = cnt;
 			this->_size = cnt;
 			this->_p = this->_alloc.allocate( this->capacity() );
-			for ( iterator it = this->begin() ; it != this->end(); ++it) {
+			std::copy( first, last, begin() );
+/*			for ( iterator it = this->begin() ; it != this->end(); ++it) {
 				_alloc.construct( &(*it), *first );	
 				++first;
 			}
+			*/
 			return;
 		}
 	
@@ -274,13 +278,17 @@ namespace ft {
 
 		void resize (size_type n, value_type val = value_type()) {
 
-			if ( n > capacity() )
+			if ( n > capacity() ) {
+				if ( !capacity() )
+					reserve( std::max( n, (size_type)1 ) );
 				reserve( std::max( n, capacity() * 2 ) );
+			}
 			
 			if ( n > size() ) {
 				
-				for ( iterator it = end(); it != begin() + n; ++it )
-					_alloc.construct( _alloc.address(*it), val );
+				std::fill( end(), begin() + n, val );
+	//			for ( iterator it = end(); it != begin() + n; ++it )
+	//				_alloc.construct( _alloc.address(*it), val );
 			}
 			else if ( n < this->size() ) {
 
@@ -376,18 +384,23 @@ namespace ft {
 		template <class InputIterator>
 			void assign (InputIterator first, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last ) {
 
-				for ( iterator it = begin(); it != end(); ++it )
-					_alloc.destroy( &(*it) );
+		//		for ( iterator it = begin(); it != end(); ++it )
+		//			_alloc.destroy( &(*it) );
 
-				size_type n = std::distance( first, last );;
+				clear();
+				size_type n = std::distance( first, last );
+//				size_type n = last - first;
 				reserve( n );
 				this->_size = n;
+				
+				std::copy( first, last, begin() );
 
-				for ( iterator it = begin(); it != end(); ++it ) {
+			/*	for ( iterator it = begin(); it != end(); ++it ) {
 
 					_alloc.construct( &(*it), *first );
 					++first;
 				}
+				*/
 		}
 
 		void assign (size_type n, const value_type& val) {
@@ -396,8 +409,9 @@ namespace ft {
 				reserve( n );
 				this->_size = n;
 
-				for ( iterator it = this->begin(); it != this->end(); ++it )
-					_alloc.construct( &(*it), val);
+				std::fill( begin(), end(), val );
+				//for ( iterator it = this->begin(); it != this->end(); ++it )
+				//	_alloc.construct( &(*it), val);
 		}
 
 		void push_back( T const & val ) {
@@ -411,7 +425,8 @@ namespace ft {
 				this->reserve( this->capacity() * 2 );
 
 			}
-			this->_alloc.construct( _alloc.address( *(end() ) ), val); 
+			//this->_alloc.construct( _alloc.address( *(end() ) ), val); 
+			*( _p + size() ) = val;
 
 			this->_size++;
 
@@ -425,8 +440,10 @@ namespace ft {
 
 		iterator insert (iterator position, const value_type& val) {
 
-			difference_type nbr = position - this->begin();
-			if ( this->size() == this->capacity() )
+			difference_type nbr = std::distance(begin(), position);
+			if ( !this->capacity() )
+				this->reserve( 1 );
+			else if ( this->size() == this->capacity() )
 				this->reserve( this->capacity() * 2 );
 			this->_size++;
 			position = this->begin() + nbr;

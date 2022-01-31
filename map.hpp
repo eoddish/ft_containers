@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school.ru      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 00:31:01 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/29 02:46:37 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/01/31 03:38:24 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,15 +325,12 @@ namespace ft {
 		typedef ft::pair<const key_type,mapped_type> value_type;
 		typedef Compare key_compare; 
 
-		class value_compare {
+		class value_compare : public std::binary_function<value_type,value_type,bool>{
 			friend class map;
 			protected:
 			Compare comp;
 			value_compare (Compare c) : comp(c) {}  
 			public:
-			typedef bool result_type;
-			typedef value_type first_argument_type;
-			typedef value_type second_argument_type;
 			bool operator() (const value_type& x, const value_type& y) const {
 				return comp(x.first, y.first);
 			}
@@ -492,7 +489,8 @@ namespace ft {
 			t_node *tmp = NULL;
 
 			ft::pair<iterator, bool> res = ft_search( this->_bst, val, tmp );
-			ft_rebalance( (res.first).node );
+			if ( res.second )
+				ft_rebalance( (res.first).node );
 			return res;
 		}
 
@@ -506,6 +504,9 @@ namespace ft {
 				ft_rebalance( res.node );
 
 				return res;
+			} else if ( !_vcomp( *position, val ) && ( !_vcomp( val, *position) ) ) {
+
+				return position;
 			} else if ( _vcomp( *position, val ) && ( _vcomp( val, *(++temp) ) ) ) {
 
 				iterator res =  ft_search( position.node, val, tmp ).first; 
@@ -795,6 +796,7 @@ namespace ft {
 			t_node *G = NULL;
 			t_node *Z = NULL;
 			int b = 0;
+			//std::cout << "N: " << N->content->first << std::endl;
 			for ( t_node *X = N->parent; X != NULL; X = G ) {
 
 
@@ -980,40 +982,148 @@ namespace ft {
 		}
 
 		void ft_delete( t_node *&tree, t_node *&z ) {
-		ft_retrace( z );
+		
+			if (!z)
+				return;
 
 			if ( z->left == NULL ) {
+
+				ft_retrace( z );
 				ft_shift( tree, z, z->right );
-//				if ( z->parent )
-//					ft_retrace( z->parent ); 
+
+/*					if ( z->parent && z->parent->bf == 0 )
+						z->parent->bf = 1;
+					else if ( z->parent )
+						z->parent->bf = 0;
+*/
+				
+/*
+				if( z->parent )
+				{	
+					z->parent->bf = findHeight( z->parent->right ) - findHeight( z->parent->left );
+					ft_retrace( z->parent );
 				}
-			else if ( z->right == NULL ) {
-				ft_shift( tree, z, z->left );
-//				if ( z->parent )
-//					ft_retrace( z->parent );
+*/
 			}
-			 else {
+			else if ( z->right == NULL ) {
+
+				ft_retrace( z );
+				ft_shift( tree, z, z->left );
+
+/*					if ( z->parent && z->parent->bf == 0 )
+						z->parent->bf = -1;
+					else if ( z->parent )
+						z->parent->bf = 0;
+						*/
+				/*	if ( z->parent )
+{
+					z->parent->bf = findHeight( z->parent->right ) - findHeight( z->parent->left );
+					ft_retrace( z->parent );
+}
+*/
+			}
+			else {
 
 				iterator it = find( z->content->first );
 				t_node *y = (++it).node;
+				t_node *p = y->parent;
 				if ( y->parent != z ) {
 					ft_shift( tree, y, y->right );
 					y->right = z->right;
 					y->right->parent = y;
-
+					
 					ft_shift( tree, z, y );
 					y->left = z->left;
 					y->left->parent = y;
-			//		ft_retrace( y->right ); 
+
+				/*	
+					if ( !y->right->left ) {
+
+						if ( y->right->bf == 0 || )
+							y->right->bf = 1;
+						else
+							y->right->bf = 0;
+						ft_retrace( y->right );
+						return;
+					}
+				*/
+
+					t_node *tmp = p->left;
+					p->left = z;
+					z->parent = p;
+
+					ft_retrace( z );
+
+					p->left = tmp;
+					
+					/*if ( y->bf == 0 )
+						y->bf = -1;
+					else
+						z->parent->bf = 0;
+					ft_retrace( z->parent );
+
+					ft_retrace(y);
+*/
+
 					return;
 				}
+
 				ft_shift( tree, z, y );
 				y->left = z->left;
 				y->left->parent = y;
-			//	ft_retrace( y ); 
+
+				t_node *tmp = y->right;
+				y->right = z;
+				z->parent = y;
+
+				ft_retrace( z );
+
+				y->right = tmp;
+
+			/*	if ( y->right )
+				ft_retrace( y->right );
+				else if (y)
+				ft_retrace(y);
+				*/
+				//y->bf = -1;
+//				y->bf = findHeight( y->right ) - findHeight( y->left );
+/*
+				if ( y && y->bf == 0 )
+					y->bf = -1;
+				else if ( y )
+					y->bf = 0;	
+				ft_retrace( y->parent );
+*/				
+				/*if ( y->right )
+				{
+					if( y->right->left ) {
+
+						ft_retrace(y->right->left);
+						return;
+						}
+					else if ( y->right->right )
+						y->right->bf = 1;
+					else
+						y->right->bf = 0;
+				}
+				*/
 			}
 
 		}
+int findMax(int a, int b){
+  if(a >= b)
+    return a;
+  else
+    return b;
+}
+
+int findHeight(t_node* root){
+
+  if(root == NULL)
+    return 0;
+
+  return findMax(findHeight(root->left), findHeight(root->right)) + 1;
+}
 
 		void ft_shift( t_node *&tree, t_node *&u, t_node *&v ) {
 

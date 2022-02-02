@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/02 20:14:30 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/02 22:32:02 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,8 @@ namespace ft {
 			this->_capacity = cnt;
 			this->_size = cnt;
 			this->_p = this->_alloc.allocate( this->capacity() );
-			std::copy( first, last, begin() );
+			for ( iterator it = begin(); first != last; ++it )
+				_alloc.construct( _alloc.address( *it ), *first++ );
 
 			return;
 		}
@@ -211,7 +212,7 @@ namespace ft {
 					this->_p = this->_alloc.allocate( other.capacity() );
 					const_iterator first = other.begin();
 					for ( iterator it = this->begin() ; it != this->end(); ++it) {
-						_alloc.construct( &(*it), *first );	
+						_alloc.construct( _alloc.address(*it), *first );	
 						++first;
 					}
 				}
@@ -316,7 +317,12 @@ namespace ft {
 
 				
 				T* p = this->_alloc.allocate( n );
-				std::copy( begin(), end(), p );
+				size_type i = 0;
+				for ( iterator it = begin(); it != end(); ++it ) {
+
+					_alloc.construct( p + i, *it );
+					++i;
+				}
 				if ( this->capacity() )
 				{
 					for ( iterator it = this->begin(); it != end(); ++it )
@@ -382,8 +388,8 @@ namespace ft {
 				reserve( n );
 				this->_size = n;
 				
-				std::copy( first, last, begin() );
-
+				for ( iterator it = begin(); first != last; ++it )
+					_alloc.construct( _alloc.address( *it ), *first++ );
 			
 		}
 
@@ -429,7 +435,12 @@ namespace ft {
 				this->reserve( this->capacity() * 2 );
 			this->_size++;
 			position = this->begin() + nbr;
-			std::copy_backward( position , this->end() - 1, this->end() );
+			iterator it1 = end() - 1;
+			for ( iterator it = end() - 2; it != position - 1; --it ) {
+
+				_alloc.construct( _alloc.address( *it1 ), *it );
+				--it1;
+			}
 
 			_alloc.construct( _alloc.address(*position), val );
 
@@ -444,7 +455,14 @@ namespace ft {
 			iterator oldend = this->end();
 			this->_size += n;
 			position = this->begin() + nbr;
-			std::copy_backward( position , oldend, this->end() );
+
+			iterator it1 = end() - 1;
+			for ( iterator it = oldend - 1; it != position - 1; --it ) {
+
+				_alloc.construct( _alloc.address( *it1 ), *it );
+				--it1;
+			}
+
 			for ( iterator it = position; it != position + n; ++it )
 				_alloc.construct( _alloc.address(*it) , val );
 		}
@@ -461,18 +479,31 @@ namespace ft {
 				pointer check = _alloc.allocate( std::max( size() + n, capacity() * 2 ) );
 				position = check + offset;
 
+				iterator it1 = position;
 					try {
-						std::copy( first, last, position );
+						
+						for ( InputIterator it = first; it != last; ++it ) {
+
+							_alloc.construct( _alloc.address( *it1 ), *it );
+							++it1;
+						}
 					}
 
 					catch( ... ) {
 
+						for ( --it1; it1 != position - 1; --it1 )
+							_alloc.destroy( _alloc.address( *it1 ) );
+												
 						_alloc.deallocate( check, std::max( size() + n, capacity() * 2 ) );
 						throw "Error";
 					}
 
-				std::copy( begin(), begin() + offset, check );				
-				std::copy( begin() + offset, end(), position + n );				
+				size_t i = 0;
+				for ( iterator it = begin(); it != begin() + offset; ++it )
+					_alloc.construct( check + i++, *it );
+				i = 0;
+				for ( iterator it = begin() + offset; it != end(); ++it )
+					_alloc.construct( check + offset + n + i++, *it );
 				_alloc.deallocate( _p, capacity() );
 				_p = check;
 				_capacity = std::max( size() + n, capacity() * 2 ); 
@@ -482,7 +513,14 @@ namespace ft {
 
 			iterator oldend = end();
 			position = begin() + offset;
-			std::copy_backward( position, oldend, end() + n);
+
+			iterator it1 = end() + n - 1;
+			for ( iterator it = oldend - 1; it != position - 1; --it ) {
+
+				_alloc.construct( _alloc.address( *it1 ), *it );
+				--it1;
+			}
+
 			for ( iterator it = position; it != position + n; ++it ) {
 				_alloc.construct( _alloc.address(*it), *first );
 				++first;
@@ -494,7 +532,12 @@ namespace ft {
 		iterator erase (iterator position) {
 
 			_alloc.destroy( _alloc.address(*position) );
-			std::copy( position + 1, this->end(), position );
+			iterator it1 = position;
+			for ( iterator it = position + 1; it != end(); ++it ) {
+
+				_alloc.construct( _alloc.address( *it1 ), *it );
+				++it1;
+			}
 			this->_size--;
 
 			return position;
@@ -506,7 +549,12 @@ namespace ft {
 			for ( iterator it = first; it != last; ++it )	
 				_alloc.destroy( &(*it) );
 
-			std::copy( last, this->end(), first );
+			iterator it1 = first;
+			for ( iterator it = last; it != end(); ++it ) {
+
+				_alloc.construct( _alloc.address( *it1 ), *it );
+				++it1;
+			}
 			this->_size -= n;
 
 			return first;

@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/01/30 00:41:37 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/01 22:55:16 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,10 +162,7 @@ namespace ft {
 			
 			this->_p = this->_alloc.allocate( this->capacity() );
 			std::fill( begin(), end(), val );
-		/*	for ( iterator it = this->begin() ; it != this->end(); ++it) {
-				_alloc.construct( _alloc.address(*it), val );	
-			}
-			*/
+		
 			return;
 		}
 
@@ -179,11 +176,7 @@ namespace ft {
 			this->_size = cnt;
 			this->_p = this->_alloc.allocate( this->capacity() );
 			std::copy( first, last, begin() );
-/*			for ( iterator it = this->begin() ; it != this->end(); ++it) {
-				_alloc.construct( &(*it), *first );	
-				++first;
-			}
-			*/
+
 			return;
 		}
 	
@@ -287,8 +280,6 @@ namespace ft {
 			if ( n > size() ) {
 				
 				std::fill( end(), begin() + n, val );
-	//			for ( iterator it = end(); it != begin() + n; ++it )
-	//				_alloc.construct( _alloc.address(*it), val );
 			}
 			else if ( n < this->size() ) {
 
@@ -316,7 +307,7 @@ namespace ft {
 
 			if ( n > this->max_size() ) {
 			
-				throw std::length_error( "vector::_M_fill_insert" );
+				throw std::length_error( "vector" );
 			}
 
 			if ( n > this->capacity() ) {
@@ -384,23 +375,14 @@ namespace ft {
 		template <class InputIterator>
 			void assign (InputIterator first, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last ) {
 
-		//		for ( iterator it = begin(); it != end(); ++it )
-		//			_alloc.destroy( &(*it) );
-
 				clear();
 				size_type n = std::distance( first, last );
-//				size_type n = last - first;
 				reserve( n );
 				this->_size = n;
 				
 				std::copy( first, last, begin() );
 
-			/*	for ( iterator it = begin(); it != end(); ++it ) {
-
-					_alloc.construct( &(*it), *first );
-					++first;
-				}
-				*/
+			
 		}
 
 		void assign (size_type n, const value_type& val) {
@@ -410,11 +392,9 @@ namespace ft {
 				this->_size = n;
 
 				std::fill( begin(), end(), val );
-				//for ( iterator it = this->begin(); it != this->end(); ++it )
-				//	_alloc.construct( &(*it), val);
 		}
 
-		void push_back( T const & val ) {
+		void push_back( const value_type & val ) {
 
 			if ( this->capacity() == 0 ) {
 				this->reserve( 1 );
@@ -425,8 +405,7 @@ namespace ft {
 				this->reserve( this->capacity() * 2 );
 
 			}
-			//this->_alloc.construct( _alloc.address( *(end() ) ), val); 
-			*( _p + size() ) = val;
+			this->_alloc.construct( _alloc.address( *(end() ) ), val); 
 
 			this->_size++;
 
@@ -479,18 +458,15 @@ namespace ft {
 				pointer check = _alloc.allocate( std::max( size() + n, capacity() * 2 ) );
 				position = check + offset;
 
-				for ( iterator it = position; it != position + n; ++it ) {
 					try {
-						_alloc.construct( _alloc.address(*it), *first );
+						std::copy( first, last, position );
 					}
+
 					catch( ... ) {
-						for( --it; it != position - 1; --it )	
-							_alloc.destroy( _alloc.address(*it));
+
 						_alloc.deallocate( check, std::max( size() + n, capacity() * 2 ) );
 						throw "Error";
 					}
-					++first;
-				}
 
 				std::copy( begin(), begin() + offset, check );				
 				std::copy( begin() + offset, end(), position + n );				

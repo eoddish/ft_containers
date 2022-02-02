@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/01 22:55:16 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/02 20:14:30 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,8 @@ namespace ft {
 			
 			
 			this->_p = this->_alloc.allocate( this->capacity() );
-			std::fill( begin(), end(), val );
+			for ( iterator it = begin(); it != end(); ++it )
+				_alloc.construct( _alloc.address( *it ), val );
 		
 			return;
 		}
@@ -279,7 +280,8 @@ namespace ft {
 			
 			if ( n > size() ) {
 				
-				std::fill( end(), begin() + n, val );
+				for ( iterator it = end(); it != begin() + n; ++it )
+					_alloc.construct( _alloc.address( *it ), val );
 			}
 			else if ( n < this->size() ) {
 
@@ -391,7 +393,8 @@ namespace ft {
 				reserve( n );
 				this->_size = n;
 
-				std::fill( begin(), end(), val );
+				for ( iterator it = begin(); it != end(); ++it )
+					_alloc.construct( _alloc.address( *it ), val );
 		}
 
 		void push_back( const value_type & val ) {

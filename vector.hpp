@@ -6,7 +6,7 @@
 /*   By: eoddish <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 10:23:56 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/02 22:32:02 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/03 19:52:36 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -532,12 +532,14 @@ namespace ft {
 		iterator erase (iterator position) {
 
 			_alloc.destroy( _alloc.address(*position) );
+
 			iterator it1 = position;
 			for ( iterator it = position + 1; it != end(); ++it ) {
 
 				_alloc.construct( _alloc.address( *it1 ), *it );
 				++it1;
 			}
+			
 			this->_size--;
 
 			return position;
@@ -546,15 +548,20 @@ namespace ft {
 		iterator erase (iterator first, iterator last) {
 
 			int n = last - first;
-			for ( iterator it = first; it != last; ++it )	
-				_alloc.destroy( &(*it) );
+			if ( !n )
+				return first;
 
+			for ( iterator it = first; it != last; ++it )	
+				_alloc.destroy( _alloc.address(*it) );
+
+			
 			iterator it1 = first;
 			for ( iterator it = last; it != end(); ++it ) {
 
 				_alloc.construct( _alloc.address( *it1 ), *it );
 				++it1;
 			}
+			
 			this->_size -= n;
 
 			return first;

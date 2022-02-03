@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 #include <deque>
+#include <list>
+#include <vector>
+
 #if 0 //CREATE A REAL STL EXAMPLE
 	#include <map>
 	#include <stack>
@@ -10,6 +13,7 @@
 	#include "map.hpp"
 	#include "stack.hpp"
 	#include "vector.hpp"
+
 #endif
 
 #include <stdlib.h>
@@ -402,10 +406,11 @@ int main(int argc, char** argv) {
 	std::cout << "vct15 contains:";
 	ft_print( vct15 );
 
-	vct15.erase (vct15.begin(),vct15.begin()+3);
+	ft::vector<int>::iterator ret = vct15.erase (vct15.begin(),vct15.begin()+3);
 
 	std::cout << "vct15 contains:";
 	ft_print( vct15 );
+	std::cout << "erase returned iterator to: " << *ret << std::endl;
 
 	//=====SWAP=====
 
@@ -492,6 +497,12 @@ int main(int argc, char** argv) {
 	ft::vector<int> vct23 ((size_t)2,200);       
 	ft::stack<int,ft::vector<int> > stc1;        
 	ft::stack<int,ft::vector<int> > stc2 ( vct23 );
+
+	//check compatibility
+	
+	ft::stack<int,std::vector<int> > stc11;        
+	ft::stack<int,std::list<int> > stc12;        
+	ft::stack<int,std::deque<int> > stc13;        
 
 	//=====EMPTY=====
 
